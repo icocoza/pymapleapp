@@ -1,0 +1,3 @@
+
+class MapleWorker:
+    pass
