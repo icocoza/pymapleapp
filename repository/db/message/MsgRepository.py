@@ -30,22 +30,23 @@ class MsgRepository(MultiDbRepository):
 		return self.selectQuery(scode, sql)
 
 
-	def getMessageList(self, scode, channelId, messageIds):
+	def getMessageListByIds(self, scode, channelId, messageIds):
 		ids = ','.join(["'" + str(id)+"'" for id in messageIds])
 		sql = f"SELECT * FROM chatMessage WHERE channelId='{channelId}' AND messageId IN({ids})"
 		return self.selectQuery(scode, sql)
 
     #SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-	def getMessageList(self, scode, channelId, joinAt, offset, count):
+	def getMessageListByJoinAt(self, scode, channelId, joinAt, offset, count):
 		strToDate = f"STR_TO_DATE('{datetime.strftime(joinAt, 'yyyy-MM-dd HH:mm:ss')}', '%Y-%m-%d %H:%i:%s')"
 		sql = f"SELECT * FROM chatMessage WHERE channelId='{channelId}' AND createdAt > {strToDate} \
                 ORDER BY createdAt DESC LIMIT {offset}, {count}"
 		return self.selectQuery(scode, sql)
 
 
-	def getMessageListWithoutDeletion(self, scode, channelId, joinAt, deleteIdsWithComma, offset, count):
+	def getMessageListWithoutDeletion(self, scode, channelId, joinAt, deletedIds, offset, count):
+		ids = ','.join(["'" + str(id)+"'" for id in deletedIds])
 		strToDate = f"STR_TO_DATE('{datetime.strftime(joinAt, 'yyyy-MM-dd HH:mm:ss')}', '%Y-%m-%d %H:%i:%s')"
-		sql = f"SELECT * FROM chatMessage WHERE channelId='{channelId}' AND createdAt > {strToDate} AND messageId NOT IN({deleteIdsWithComma}) \
+		sql = f"SELECT * FROM chatMessage WHERE channelId='{channelId}' AND createdAt > {strToDate} AND messageId NOT IN({ids}) \
                 ORDER BY createdAt DESC LIMIT {offset}, {count}"
 		return self.selectQuery(scode, sql)
 

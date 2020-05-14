@@ -18,12 +18,6 @@ class ChannelRepository(MultiDbRepository):
 		sql = f"DELETE FROM chatChannel WHERE channelId='{channelId}'"
 		return self.deleteQuery(scode, sql)
 
-
-	def updateAttendee(self, scode, channelId, attendees, attendeeCount):
-		sql = f"UPDATE chatChannel SET attendees='{attendees}', attendeeCount={attendeeCount} WHERE channelId='{channelId}'"
-		return self.updateQuery(scode, sql)
-
-
 	def updateAttendee(self, scode, channelId, attendees, attendeeCount, channelType):
 		sql = f"UPDATE chatChannel SET attendees='{attendees}', attendeeCount={attendeeCount}, channelType='{channelType}' WHERE channelId='{channelId}'"
 		return self.updateQuery(scode, sql)

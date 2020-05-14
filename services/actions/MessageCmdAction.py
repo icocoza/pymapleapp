@@ -1,80 +1,88 @@
-class MessageCmdAction:
+import os, sys, json, datetime
+from services.constant.MapleCmd import MapleCmd
+from common.utils.StrUtils import StrUtils
+from services.constant.AllError import AllError
+from services.actions.Action import Action
+
+from repository.db.message.MsgRepository import MsgRepository
+from repository.db.message.MsgReadRepository import MsgReadRepository
+from repository.db.message.MsgDelRepository import MsgDelRepository
+from repository.db.message.MsgDelIdRepository import MsgDelIdRepository
+from repository.db.channel.ChannelRepository import ChannelRepository
+from repository.db.channel.MyChannelRepository import MyChannelRepository
+from repository.db.channel.ChannelLastMsgRepository import ChannelLastMsgRepository
+
+import common.config.appconfig as appconfig
+
+from services.constant.MapleEnum.EMessageType import EMessageType
+
+class MessageCmdAction(Action):
     def __init__(self):
         super().__init__()
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, ChatMessageForm> message = (AuthSession ss, ResponseData<EAllError> res, ChatMessageForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        String messageId = StrUtils.getSha1Uuid("messageId:");
+        self.msgRepository = MsgRepository();
+        self.msgReadRepository = MsgReadRepository();
+        self.msgDelRepository = MsgDelRepository();
+        self.msgDelIdRepository = MsgDelIdRepository();
+        self.channelRepository = ChannelRepository();
+        self.myChannelRepository = MyChannelRepository();
+        self.channelLastMsgRepository = ChannelLastMsgRepository();
 
-        if(messageCommonRepository.addChatMessage(form.getScode(), messageId, form.getChannelId(), userId, form.getMessageType(), form.getContent()) == false)
-            return res.setError(EAllError.eFailToSaveMessage);
-        if(channelCommonRepository.updateChatChannelLastMsgAndTime(form.getScode(), form.getChannelId(), obtainShortcut(form.getContent())) == false)
-            return res.setError(EAllError.eFailToUpdateChannel);
+    def addMessage(self, scode, session, jdata):
+        userId = session['userId']
+        channelId = jdata['channelId']
+        msgId = StrUtils.getSha256Uuid('msgId:')
 
-        return res.setError(EAllError.ok).setParam("messageId", messageId).setParam("content", form.getContent());
-    };
+        if self.msgRepository.insert(scode, msgId, channelId, userId, jdata['messageType'], jdata['content']) == False:
+            return self.setError(AllError.FailToSaveMessage)
+        if self.channelRepository.updateLastMsgAndTime(scode, channelId, self._getShortContent(jdata['content'])) == False:
+            return self.setError(AllError.FailToUpdateChannel)
+        return self.setOk(scode, {'messageId': msgId, 'content': jdata['content']})
 
-    private String obtainShortcut(String msg) {
-        return msg.length()>32 ? msg.substring(0, 31) : msg;
-    }
+    def syncMessage(self, scode, session, jdata):
+        userId = session['userId']
+        channelId = jdata['channelId']
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, SyncMessageForm> syncMessage = (AuthSession ss, ResponseData<EAllError> res, SyncMessageForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
+        channelRec = self.myChannelRepository.getChannel(scode, userId, channelId)
+        if len(channelRec) < 1:
+            return self.setError(AllError.NoChannel)
+        
+        delIdList = self.msgDelIdRepository.getList(scode, channelId, userId, channelRec['createdAt'])
+        msgList = None
+        if len(delIdList) < 1:
+            msgList = self.msgRepository.getMessageListByJoinAt(scode, channelId, channelRec['createdAt'], jdata['offset'], jdata['count'])
+        else:
+            msgList = self.msgRepository.getMessageListWithoutDeletion(scode, channelId, channelRec['createdAt'], delIdList, jdata['offset'], jdata['count'])
+        return self.setOk(scode, {'channelId': channelId, 'messages': msgList})
 
-        MyChannelRec rec = channelCommonRepository.getMyChannel(form.getScode(), userId, form.getChannelId());
-        if( rec == MyChannelRec.Empty )
-            return res.setError(EAllError.eNoChannel);
+    def readMessage(self, scode, session, jdata):
+        userId = session['userId']
+        channelId = jdata['channelId']
+        
+        channelRec = self.myChannelRepository.getChannel(scode, userId, channelId)
+        if len(channelRec) < 1:
+            return self.setError(scode, AllError.NoChannel)
 
-        List<MessageDelRec.RecDelId> delList = messageCommonRepository.getDelMessageIdList(form.getScode(), form.getChannelId(), userId, rec.getCreatedAt());
+        msgList = self.msgRepository.getMessageListByIds(scode, channelId, jdata['messageIds'])
+        if len(msgList) < 1:
+            return self.setError(scode, AllError.NoMessage)
+        
+        readIds = []
+        for message in msgList:
+            messageId = message['messageId']
+            self.msgReadRepository.insert(scode, channelId, userId, messageId)
+            self.msgRepository.incReadCount(scode, messageId)
+            readIds.append(messageId)
+        return self.setOk(scode, {'channelId': channelId, 'readIds': readIds})
 
-        List<MessageRec> msgList = new ArrayList<>();
-        if(delList.size() < 1)
-            msgList.addAll(messageCommonRepository.getChatMessageList(form.getScode(), form.getChannelId(), rec.getCreatedAt(), form.getOffset(), form.getCount()));
-        else {
-            String deletedIds = delList.stream().map(e -> "'" + e.messageId + "'").collect(Collectors.joining(","));
-            msgList.addAll(messageCommonRepository.getMessageListWithoutDeletion(form.getScode(), form.getChannelId(), rec.getCreatedAt(), deletedIds, form.getOffset(), form.getCount()));
-        }
+    def delMessage(self, scode, session, jdata):
+        userId = session['userId']
+        channelId = jdata['channelId']
 
-        return res.setError(EAllError.ok).setParam("channelId", form.getChannelId()).setParam("result", msgList);
-    };
-
-    ICommandFunction<AuthSession, ResponseData<EAllError>, MessageIdForm> onlineOnlyMessage = (AuthSession ss, ResponseData<EAllError> res, MessageIdForm form) -> {
-        return res.setError(EAllError.eNoServiceCommand);
-    };
-
-    ICommandFunction<AuthSession, ResponseData<EAllError>, MessageIdForm> pushOnlyMessage = (AuthSession ss, ResponseData<EAllError> res, MessageIdForm form) -> {
-        return res.setError(EAllError.eNoServiceCommand);
-    };
-
-    ICommandFunction<AuthSession, ResponseData<EAllError>, ReadMessageForm> readMessage = (AuthSession ss, ResponseData<EAllError> res, ReadMessageForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-
-        MyChannelRec rec = channelCommonRepository.getMyChannel(form.getScode(), userId, form.getChannelId());
-        if(rec == MyChannelRec.Empty)
-            return res.setError(EAllError.eNoChannel);
-
-        List<MessageRec> messageList = messageCommonRepository.getChatMessageList(form.getScode(), form.getChannelId(), form.getMessageIds());
-        if(messageList.size() < 1)
-            return res.setError(EAllError.eNoMessage);
-
-        for( MessageRec item : messageList ) {
-            messageCommonRepository.addMessageReadInfo(form.getScode(), form.getChannelId(), userId, item.getMessageId());
-            messageCommonRepository.incReadCount(form.getScode(), item.getMessageId());
-        }
-        List<String> messageIds = messageList.stream().map(x -> x.getMessageId()).collect(Collectors.toList());
-        return res.setError(EAllError.ok).setParam("channelId", form.getChannelId()).setParam("readIdList", messageIds);
-    };
-
-    ICommandFunction<AuthSession, ResponseData<EAllError>, DelMessageForm> delMessage = (AuthSession ss, ResponseData<EAllError> res, DelMessageForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-
-        List<String> deletedIds = new ArrayList<>();
-        for(String messageId : form.getMessageIds()) {
-            if (messageCommonRepository.addDelMessageId(form.getScode(), form.getChannelId(), userId, messageId) == true)
-                deletedIds.add(messageId);
-        }
-
-        if(deletedIds.size() < 1)
-            return res.setError(EAllError.eFailToDeleteMessage);
-        return res.setError(EAllError.ok).setParam("channelId", form.getChannelId()).setParam("deletedIdList", deletedIds);
-    };
+        deletedIds = []
+        for messageId in jdata['messageIds']:
+            if self.msgDelRepository.insert(scode, channelId, userId, messageId) == True:
+                deletedIds.append(messageId)
+        if len(deletedIds) < 1:
+            return self.setError(scode, AllError.FailToDeleteMessage)
+        return self.setOk(scode, {'channelId': channelId, 'deletedIds': deletedIds})

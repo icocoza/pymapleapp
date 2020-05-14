@@ -33,7 +33,7 @@ class StrUtils:
     def isNumeric(self, data):
         return self.__isPattern(NUMERIC_PATTERN, data)
 
-    IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)"
+    IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|png|gif|bmp|jpeg))$)"
     def isImageFile(self, data):
         return self.__isPattern(IMAGE_PATTERN, data)
 

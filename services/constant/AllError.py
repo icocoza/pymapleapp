@@ -157,11 +157,11 @@ class AllError(Enum):
 	WrongAptCode = auto()
 	VoteItemHas2More = auto()
 	
-	eNoSession = auto()
-	eNoChannel = auto()
-	eNoData = auto()
-	eInvalidParameter = auto()
-	eFailToUpdate = auto()
+	NoSession = auto()
+	NoChannel = auto()
+	NoData = auto()
+	InvalidParameter = auto()
+	FailToUpdate = auto()
 
 	complete = auto()
 	exception = auto()
@@ -180,11 +180,11 @@ class AllError(Enum):
 	invalid_orderid = auto()
 	mismatch_orderid_deliverid = auto()
 
-	eNoMessage = auto()
-	eAlreadyReadMessage = auto()
-	eFailToSaveMessage = auto()
-	eFailToDeleteMessage = auto()
-	eFailToUpdateChannel = auto()
+	NoMessage = auto()
+	AlreadyReadMessage = auto()
+	FailToSaveMessage = auto()
+	FailToDeleteMessage = auto()
+	FailToUpdateChannel = auto()
 
 	eNoServiceCommand = auto()
 

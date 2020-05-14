@@ -6,8 +6,7 @@ sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 
 from repository.db.MultiDbRepository import MultiDbRepository
 
-class RecChLastMsgRepository(MultiDbRepository):
-
+class ChannelLastMsgRepository(MultiDbRepository):
 
 	def getChannelLastMsg(self, scode, channelIds):
 		channels = ','.join(["'" + str(id)+"'" for id in channelIds])

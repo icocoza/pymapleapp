@@ -1,92 +1,84 @@
-class FriendCmdAction:
+import os, sys, json, datetime
+from services.constant.MapleCmd import MapleCmd
+from common.utils.StrUtils import StrUtils
+from services.constant.AllError import AllError
+from services.actions.Action import Action
+
+from repository.db.friend.FriendRepository import FriendRepository
+from repository.db.friend.FriendInfoRepository import FriendInfoRepository
+import common.config.appconfig as appconfig
+
+from services.constant.MapleEnum.EFriendType import EFriendType
+from services.constant.MapleEnum.EFriendStatus import EFriendStatus
+
+class FriendCmdAction(Action):
     def __init__(self):
         super().__init__()
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, AddFriendForm> addFriend = (AuthSession ss, ResponseData<EAllError> res, AddFriendForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        List<IdName> addedFriend = new ArrayList<>();
-        for(IdName friend : form.getFriendList()) {
-            if( friendCommonRepository.addFriend(form.getScode(), userId, friend.getUserId(), friend.getUserName(), form.getFriendType()) == true)
-                addedFriend.add(new FriendForm().new IdName(friend.getUserId(), friend.getUserName()));
-        }
-        return res.setError(EAllError.ok).setParam("result", addedFriend);
-    };
+        self.friendRepository = FriendRepository()
+        self.friendInfoRepository = FriendInfoRepository()
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, DelFriendForm> delFriend = (AuthSession ss, ResponseData<EAllError> res, DelFriendForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        List<String> deletedFriend = new ArrayList<>();
-        for(String friendId : form.getFriendIds())
-            if(friendCommonRepository.deleteFriend(form.getScode(), userId, friendId) == true)
-                deletedFriend.add(friendId);
-        return res.setError(EAllError.ok).setParam("result", deletedFriend);
-    };
+    def addFriend(self, scode, session, jdata):
+        userId = session['userId']
+        friendList = jdata['friendList']
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, ChangeFriendType> changeFriendType = (AuthSession ss, ResponseData<EAllError> res, ChangeFriendType form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        List<String> updatedFriend = new ArrayList<>();
+        addedFriend = []
+        for friend in friendList:
+            if self.friendRepository.insert(scode, userId, friend['friendId'], friend['friendName'], jdata['friendType']) == True:
+                addedFriend.append({'friendId': friend['friendId'], 'friendName': friend['friendName']})
+        return self.setOk(scode, {'added': addedFriend})
 
-        for(NameType friend : form.getFriendTypeList()) {
-            String friendId = userCommonRepository.findUserIdByUserName(form.getScode(), friend.getUserName());
-            if(friendCommonRepository.updateFriendType(form.getScode(), userId, friendId, friend.getFriendType())==true)
-                updatedFriend.add(friend.getUserName());
-        }
-        return res.setError(EAllError.ok).setParam("result", updatedFriend);
-    };
+    def delFriend(self, scode, session, jdata):
+        userId = session['userId']
+        friendIds = jdata['friendIds']
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, FriendIdListForm> friendsIdList = (AuthSession ss, ResponseData<EAllError> res, FriendIdListForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        List<FriendRec> friendList = friendCommonRepository.getFriendList(form.getScode(), userId, form.getFriendType(), form.getOffset(), form.getCount());
-        if(friendList.size()<1)
-            return res.setError(EAllError.eNoListData);
-        return res.setError(EAllError.ok).setParam("result", friendList);
-    };
+        deletedFriend = []
+        for friendId in friendIds:
+            if self.friendRepository.delete(scode, userId, friendId) == True:
+                deletedFriend.append(friendId)
+        return self.setOk(scode, {'deleted': deletedFriend})
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, FriendCountForm> friendsCount = (AuthSession ss, ResponseData<EAllError> res, FriendCountForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
+    def changeFriendType(self, scode, session, jdata):
+        userId = session['userId']
+        updatedFriend = []
 
-        int count = friendCommonRepository.getFriendCount(form.getScode(), userId, form.getFriendType());
-        return res.setError(EAllError.ok).setParam("type", form.getFriendType()).setParam("count", count);
-    };
+        for friend in jdata['friendList']:
+            if self.friendRepository.updateFriendType(scode, userId, friend['friendId'], friend['friendType']) == True:
+                updatedFriend.append(friend['friendId'])
+        return self.setOk(scode, {'updated': updatedFriend})
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, FriendInfoForm> friendsInfo = (AuthSession ss, ResponseData<EAllError> res, FriendInfoForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        List<FriendRec> friendList = friendCommonRepository.getFriendListByIds(form.getScode(), userId, form.getFriendIds());
-        if(friendList.size()<1)
-            return res.setError(EAllError.eNoListData);
-        return res.setError(EAllError.ok).setParam("result", friendList);
-    };
+    def changeFriendType(self, scode, session, jdata):
+        userId = session['userId']
+        friendList = self.friendRepository.getListByType(scode, userId, jdata['friendType'], jdata['offset'], jdata['count'])
+        if len(friendList) < 1:
+            return self.setError(scode, AllError.NoListData)
+        return self.setOk(scode, friendList)
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, AppendMeForm> friendMeUser = (AuthSession ss, ResponseData<EAllError> res, AppendMeForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        List<FriendRec.FriendRecInfo> friendInfoList = friendCommonRepository.getFriendMeList(form.getScode(), userId, form.getFriendType(), form.getOffset(), form.getCount());
-        if(friendInfoList.size()<1)
-            return res.setError(EAllError.eNoListData);
+    def friendCount(self, scode, session, jdata):
+        userId = session['userId']
+        count = self.friendRepository.getCount(scode, userId, jdata['friendType'])
+        return self.setOk(scode, {'friendType': jdata['friendType'], 'count': count})
 
-        return res.setError(EAllError.ok).setParam("result", friendInfoList);
-    };
+    def friendsInfo(self, scode, session, jdata):
+        userId = session['userId']
+        friendInfoList = self.friendRepository.getListByIds(scode, userId, jdata['friendIds'])
+        if len(friendInfoList) < 1: 
+            return self.setError(scode, AllError.NoListData)
+        return self.setOk(scode, friendInfoList)
 
-    /**
-     * user list of append me by friend
-     * @param ss
-     * @param res
-     * @param userData,
-     * @return  count
-     */
-    ICommandFunction<AuthSession, ResponseData<EAllError>, FriendNameForm> appendMeCount = (AuthSession ss, ResponseData<EAllError> res, FriendNameForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        int count = friendCommonRepository.getFriendMeCount(form.getScode(), userId, EFriendType.friend);
-        return res.setError(EAllError.ok).setParam("count", count);
-    };
+    def friendMeUser(self, scode, session, jdata):
+        userId = session['userId']
+        friendInfoList = self.friendRepository.getFriendMeList(scode, userId, jdata['friendType'], jdata['offset'], jdata['count'])
+        if len(friendInfoList) < 1: 
+            return self.setError(scode, AllError.NoListData)
+        return self.setOk(scode, friendInfoList)
 
-    /**
-     * user list of block me by friend
-     * @param ss
-     * @param res
-     * @param userData,
-     * @return count
-     */
-    ICommandFunction<AuthSession, ResponseData<EAllError>, FriendNameForm> blockMeCount = (AuthSession ss, ResponseData<EAllError> res, FriendNameForm form) -> {
-        String userId = userCommonRepository.findUserIdByUserName(form.getScode(), form.getUserName());
-        int count = friendCommonRepository.getFriendMeCount(form.getScode(), ss.getUserId(), EFriendType.block);
-        return res.setError(EAllError.ok).setParam("count", count);
-    };
+    def appendMeCount(self, scode, session, jdata):
+        userId = session['userId']
+        count = self.friendRepository.getFriendMeCount(scode, userId, jdata['friendType'])
+        return self.setOk(scode, {'count': count})
+
+    def blockMeCount(self, scode, session, jdata):
+        userId = session['userId']
+        count = self.friendRepository.getFriendMeCount(scode, userId, EFriendType.block.name())
+        return self.setOk(scode, {'count': count})

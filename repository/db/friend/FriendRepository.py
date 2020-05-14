@@ -26,7 +26,7 @@ class FriendRepository(MultiDbRepository):
 		return self.update(scode, sql)
 
 
-	def getList(self, scode, userId, friendType, offset, count):
+	def getListByType(self, scode, userId, friendType, offset, count):
 		if('all' == friendType):
 			return getListAll(userId, offset, count)
 		sql = f"SELECT * FROM friend WHERE userId='{userId}' AND friendType='{friendType}' LIMIT {offset}, {count}"
@@ -38,7 +38,7 @@ class FriendRepository(MultiDbRepository):
 		return self.selectQuery(scode, sql)
 
 
-	def getList(self, scode, userId, friendIds):
+	def getListByIds(self, scode, userId, friendIds):
 		friends = ','.join(["'" + str(id)+"'" for id in friendIds])
 		sql = f"SELECT * FROM friend WHERE userId='{userId}' AND friendId IN ({friends})"
 		return self.selectQuery(scode, sql)

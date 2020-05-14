@@ -53,11 +53,6 @@ class BoardCmdAction(Action):
     
         self.imageTool = ImageTool()
 
-    def __getShortContent(self, content):
-        if len(content) < 55:
-            return content
-        return content[:54] + "...(More)"
-
     def __addBoard(self, scode, session, jdata):
         userId = session['userId']
         userName = session['userName']
@@ -66,7 +61,7 @@ class BoardCmdAction(Action):
         userRec = self.userRepository.getUser(scode, userId)
         if userRec == None or userRec['leftAt'] != None:
             return self.setError(scode, AllError.InvalidUser)
-        if self.boardRepository.insert(scode, boardId, userId, userName, jdata['title'], self.__getShortContent(jdata['content']), 
+        if self.boardRepository.insert(scode, boardId, userId, userName, jdata['title'], self._getShortContent(jdata['content']), 
                                        jdata['hasImage'], jdata['hasFile'], jdata['category'], jdata['contentType']) == False:
             return self.setError(scode, AllError.FailAddBoard)
         
@@ -150,7 +145,7 @@ class BoardCmdAction(Action):
         return self.setOk(scode, {'boardId': boardId})
 
     def __udpateBoard(self, scode, userId, boardId, scrapIds, jdata):
-        if self.boardRepository.updateBoard(scode, boardId, userId, jdata['title'], self.__getShortContent(jdata['content']), 
+        if self.boardRepository.updateBoard(scode, boardId, userId, jdata['title'], self._getShortContent(jdata['content']), 
                     jdata['hasFile'], jdata['category'], jdata['contentType']) == False:
             return self.setError(scode, AllError.FailUpdate)
         
