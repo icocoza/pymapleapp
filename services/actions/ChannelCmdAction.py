@@ -8,17 +8,29 @@ from repository.db.channel.ChannelRepository import ChannelRepository
 from repository.db.channel.MyChannelExtRepository import MyChannelExtRepository
 from repository.db.channel.MyChannelRepository import MyChannelRepository
 from repository.db.channel.ChannelLastMsgRepository import ChannelLastMsgRepository
-from services.constant.MapleEnum.EChannelType import EChannelType
+from services.constant.MapleEnum import EChannelType
 
 class ChannelCmdAction(Action):
     def __init__(self):
         super().__init__()
 
+        self.mapleCmd = MapleCmd()
         self.channelRepository = ChannelRepository()
         self.myChannelRepository = MyChannelRepository()
         self.myChannelExtRepository = MyChannelExtRepository()
         self.channelLastMsgRepository = ChannelLastMsgRepository()
     
+        self.funcMap = {}
+        self.funcMap[self.mapleCmd.EChannelCmd().channelCreate.name] = lambda scode, session, jdata: self.channelCreate(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EChannelCmd().channelExit.name] = lambda scode, session, jdata: self.channelExit(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EChannelCmd().channelEnter.name] = lambda scode, session, jdata: self.channelEnter(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EChannelCmd().channelInvite.name] = lambda scode, session, jdata: self.channelInvite(scode, session, jdata)
+        
+        self.funcMap[self.mapleCmd.EChannelCmd().myChannel.name] = lambda scode, session, jdata: self.myChannel(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EChannelCmd().myChannelCount.name] = lambda scode, session, jdata: self.myChannelCount(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EChannelCmd().channelLastMessage.name] = lambda scode, session, jdata: self.channelLastMessage(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EChannelCmd().channelInfos.name] = lambda scode, session, jdata: self.channelInfos(scode, session, jdata)
+
     def channelCreate(self, scode, session, jdata):
         userId = session['userId']
         attendeeCount = 2

@@ -6,7 +6,7 @@ from services.actions.Action import Action
 from services.actions.user.LoginToken import LoginToken
 from services.actions.user.SigninToken import SigninToken
 from services.actions.user.AppToken import AppToken
-from services.constant.MapleEnum.EUserAuthType import EUserAuthType
+from services.constant.MapleEnum import EUserAuthType
 
 from repository.db.user.UserRepository import UserRepository
 from repository.db.user.UserAuthRepository import UserAuthRepository
@@ -17,6 +17,8 @@ from repository.db.user.UserTokenRepository import UserTokenRepository
 class UserCmdAction(Action):
     def __init__(self):
         super().__init__()
+
+        self.mapleCmd = MapleCmd()
         self.loginToken = LoginToken()
         self.signinToken = SigninToken()
         self.appToken = AppToken()
@@ -27,7 +29,14 @@ class UserCmdAction(Action):
         self.userTokenRepository = UserTokenRepository()
 
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EAdminCmd().adminRegister.name] = lambda jdata: adminRegister(jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().registerIdPw.name] = lambda scode, jdata: self.registerIdPw(scode, jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().registerEmail.name] = lambda scode, jdata: self.registerEmail(scode, jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().registerPhone.name] = lambda scode, jdata: self.registerMobile(scode, jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().userLogin.name] = lambda scode, jdata: self.userLogin(scode, jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().anonymousLogin.name] = lambda scode, jdata: self.anonymousLogin(scode, jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().userSignIn.name] = lambda scode, jdata: self.userSignIn(scode, jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().userChangePW.name] = lambda scode, jdata: self.userChangePW(scode, jdata)
+        self.funcMap[self.mapleCmd.EUserCmd().findUserName.name] = lambda scode, jdata: self.findUserName(scode, jdata)
 
     def __registerUser(self, scode, authType, jdata, enableToken):
         userId = jdata['userId'] if 'userId' in jdata else StrUtils.getSha256Uuid('userId:') #for anonymous user

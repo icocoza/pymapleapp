@@ -10,7 +10,7 @@ import common.config.appconfig as appconfig
 class FileCmdAction:
     def __init__(self):
         super().__init__()
-
+        self.mapleCmd = MapleCmd()
         self.fileRepository = FileRepository()
         
     def uploadFile(self, scode, session, jdata):

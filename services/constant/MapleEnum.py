@@ -21,7 +21,6 @@ class EAdminStatus(Enum):
     block = "block"
     leave = "leave"
 
-
 class EAuthProvider(Enum):
     local = "local"
     facebook = "facebook"
@@ -37,7 +36,6 @@ class EUploadFileType(Enum):
     png = "png"
     jpg = "jpg"
     gif = "gif"
-
 
 class EUserAuthType(Enum):
     idpw = "idpw"

@@ -14,19 +14,27 @@ from repository.db.channel.ChannelLastMsgRepository import ChannelLastMsgReposit
 
 import common.config.appconfig as appconfig
 
-from services.constant.MapleEnum.EMessageType import EMessageType
+from services.constant.MapleEnum import EMessageType
 
 class MessageCmdAction(Action):
     def __init__(self):
         super().__init__()
 
-        self.msgRepository = MsgRepository();
-        self.msgReadRepository = MsgReadRepository();
-        self.msgDelRepository = MsgDelRepository();
-        self.msgDelIdRepository = MsgDelIdRepository();
-        self.channelRepository = ChannelRepository();
-        self.myChannelRepository = MyChannelRepository();
-        self.channelLastMsgRepository = ChannelLastMsgRepository();
+        self.mapleCmd = MapleCmd()
+        self.msgRepository = MsgRepository()
+        self.msgReadRepository = MsgReadRepository()
+        self.msgDelRepository = MsgDelRepository()
+        self.msgDelIdRepository = MsgDelIdRepository()
+        self.channelRepository = ChannelRepository()
+        self.myChannelRepository = MyChannelRepository()
+        self.channelLastMsgRepository = ChannelLastMsgRepository()
+
+        self.funcMap = {}
+        self.funcMap[self.mapleCmd.EMessageCmd().addMessage.name] = lambda scode, session, jdata: self.addMessage(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EMessageCmd().syncMessage.name] = lambda scode, session, jdata: self.syncMessage(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EMessageCmd().readMessage.name] = lambda scode, session, jdata: self.readMessage(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EMessageCmd().delMessage.name] = lambda scode, session, jdata: self.delMessage(scode, session, jdata)
+
 
     def addMessage(self, scode, session, jdata):
         userId = session['userId']

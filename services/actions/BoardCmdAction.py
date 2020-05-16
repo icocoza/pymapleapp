@@ -23,7 +23,7 @@ from repository.db.board.ScrapRepository import ScrapRepository
 from repository.db.file.FileRepository import FileRepository
 
 from common.utils.HtmlScrapper import HtmlScrapper
-from services.constant.MapleEnum.EBoardContentType import EBoardContentType
+from services.constant.MapleEnum import EBoardContentType
 import common.config.appconfig as appconfig
 class BoardCmdAction(Action):
 
@@ -49,8 +49,28 @@ class BoardCmdAction(Action):
         
         self.mapleCmd = MapleCmd()
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EBoardCmd.addboard.name] = lambda scode, session, jdata: self.addBoard(scode, session, jdata)
-    
+        self.funcMap[self.mapleCmd.EBoardCmd.addBoard.name] = lambda scode, session, jdata: self.addBoard(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.delBoard.name] = lambda scode, session, jdata: self.delBoard(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.updateBoardTitle.name] = lambda scode, session, jdata: self.updateBoardTitle(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.updateBoardContent.name] = lambda scode, session, jdata: self.updateBoardContent(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.updateBoardCategory.name] = lambda scode, session, jdata: self.updateBoardCategory(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.updateBoard.name] = lambda scode, session, jdata: self.updateBoard(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.getBoardList.name] = lambda scode, session, jdata: self.getBoardList(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.getBoardContent.name] = lambda scode, session, jdata: self.getBoardContent(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.incBoardLike.name] = lambda scode, session, jdata: self.incBoardLike(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.incBoardDislike.name] = lambda scode, session, jdata: self.incBoardDislike(scode, session, jdata)
+
+        self.funcMap[self.mapleCmd.EBoardCmd.addReply.name] = lambda scode, session, jdata: self.addReply(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.delReply.name] = lambda scode, session, jdata: self.delReply(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.replyList.name] = lambda scode, session, jdata: self.replyList(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.addVote.name] = lambda scode, session, jdata: self.addVote(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.voteItemList.name] = lambda scode, session, jdata: self.voteItemList(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.selectVoteItem.name] = lambda scode, session, jdata: self.selectVoteItem(scode, session, jdata)
+
+        self.funcMap[self.mapleCmd.EBoardCmd.updateVote.name] = lambda scode, session, jdata: self.updateVote(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.changeVoteSelection.name] = lambda scode, session, jdata: self.changeVoteSelection(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EBoardCmd.getVoteInfoList.name] = lambda scode, session, jdata: self.getVoteInfoList(scode, session, jdata)
+
         self.imageTool = ImageTool()
 
     def __addBoard(self, scode, session, jdata):
@@ -321,7 +341,5 @@ class BoardCmdAction(Action):
         voteInfos = self.boardVoteRepository.getVoteInfoList(scode, jdata['boardIdds'])
         return self.setOk(scode, voteInfos)
 
-    def getVoteInfoList(self, scode, session, jdata):
-        return self.setError(scode, AllError.NotImplemented)
 
  

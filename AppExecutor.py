@@ -1,4 +1,4 @@
-from IotDataProcessor import IotDataProcessor
+from AppProcessor import AppProcessor
 from services.scheduler.AirKoreaCollector import AirKoreaCollector
 
 class AppExecutor:
@@ -18,5 +18,5 @@ class AppExecutor:
     def _executor(self, type):
         print('Type: ', str(type))
         if type == 'maple':
-            return IotDataProcessor()
+            return AppProcessor()
         return None

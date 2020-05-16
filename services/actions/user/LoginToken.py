@@ -3,7 +3,7 @@ from common.utils.CryptoHelper import CryptoHelper
 from common.utils.StrUtils import StrUtils
 import common.utils.keygen as keygen
 
-class UserToken:
+class LoginToken:
     EXPIRE_DAYS = 90
 
     def create(self, scode, userId, uuid, authType):

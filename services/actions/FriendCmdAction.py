@@ -8,15 +8,28 @@ from repository.db.friend.FriendRepository import FriendRepository
 from repository.db.friend.FriendInfoRepository import FriendInfoRepository
 import common.config.appconfig as appconfig
 
-from services.constant.MapleEnum.EFriendType import EFriendType
-from services.constant.MapleEnum.EFriendStatus import EFriendStatus
+from services.constant.MapleEnum import EFriendType
+from services.constant.MapleEnum import EFriendStatus
 
 class FriendCmdAction(Action):
     def __init__(self):
         super().__init__()
 
+        self.mapleCmd = MapleCmd()
         self.friendRepository = FriendRepository()
         self.friendInfoRepository = FriendInfoRepository()
+
+        self.funcMap = {}
+        self.funcMap[self.mapleCmd.EFriendCmd().addfriend.name] = lambda scode, session, jdata: self.addMessage(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EFriendCmd().delFriend.name] = lambda scode, session, jdata: self.delFriend(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EFriendCmd().changeFriendType.name] = lambda scode, session, jdata: self.changeFriendType(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EFriendCmd().getFriendList.name] = lambda scode, session, jdata: self.getFriendList(scode, session, jdata)
+        
+        self.funcMap[self.mapleCmd.EFriendCmd().friendCount.name] = lambda scode, session, jdata: self.friendCount(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EFriendCmd().friendsInfo.name] = lambda scode, session, jdata: self.friendsInfo(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EFriendCmd().friendMeUser.name] = lambda scode, session, jdata: self.friendMeUser(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EFriendCmd().appendMeCount.name] = lambda scode, session, jdata: self.appendMeCount(scode, session, jdata)
+        self.funcMap[self.mapleCmd.EFriendCmd().blockMeCount.name] = lambda scode, session, jdata: self.blockMeCount(scode, session, jdata)
 
     def addFriend(self, scode, session, jdata):
         userId = session['userId']
@@ -47,7 +60,7 @@ class FriendCmdAction(Action):
                 updatedFriend.append(friend['friendId'])
         return self.setOk(scode, {'updated': updatedFriend})
 
-    def changeFriendType(self, scode, session, jdata):
+    def getFriendList(self, scode, session, jdata):
         userId = session['userId']
         friendList = self.friendRepository.getListByType(scode, userId, jdata['friendType'], jdata['offset'], jdata['count'])
         if len(friendList) < 1:
