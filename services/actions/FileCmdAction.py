@@ -1,6 +1,5 @@
 import os, sys, json, datetime
-from services.constant.MapleCmd import MapleCmd
-from common.utils.StrUtils import StrUtils
+import common.utils.StrUtils as StrUtils
 from services.constant.AllError import AllError
 from services.actions.Action import Action
 
@@ -10,14 +9,14 @@ import common.config.appconfig as appconfig
 class FileCmdAction:
     def __init__(self):
         super().__init__()
-        self.mapleCmd = MapleCmd()
+        self.funcMap = {}
         self.fileRepository = FileRepository()
         
     def uploadFile(self, scode, session, jdata):
         pass
 
     def __uploadFile(self, ):
-        fileId = StrUtils.getSha256Uuid('fileId:')
+        fileId = StrUtils.getMapleUuid('fileId:')
 
 #     def download(self, scode, userId, url, savePath):
 #         if url is None:

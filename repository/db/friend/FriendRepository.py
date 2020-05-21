@@ -47,7 +47,7 @@ class FriendRepository(MultiDbRepository):
 	def getCount(self, scode, userId, friendType):
 		if('all' == friendType):
 			return self.count(f"SELECT COUNT(*) FROM friend WHERE userId='{userId}'")
-		return self.count(f"SELECT COUNT(*) FROM friend WHERE userId='{userId}' AND friendType='{friend}'")
+		return self.count(f"SELECT COUNT(*) FROM friend WHERE userId='{userId}' AND friendType='{friendType}'")
 
 	def getFriendMeCount(self, scode, userId, friendType):
 		if('all' == friendType):

@@ -22,5 +22,5 @@ class BoardLikeRepository(MultiDbRepository):
 		return super.delete(self.deleteQuery(scode, sql))
 
 	def getPreference(self, scode, boardId, userId):
-		sql = f"SELECT * FROM boardVoter WHERE boardId='{boardId}' AND userId='{userId}'"
+		sql = f"SELECT userName, preferences FROM boardVoter WHERE boardId='{boardId}' AND userId='{userId}'"
 		return self.selectQuery(scode, sql)

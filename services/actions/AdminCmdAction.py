@@ -1,6 +1,6 @@
 import os, sys, json, datetime
-from services.constant.MapleCmd import MapleCmd
-from common.utils.StrUtils import StrUtils
+from services.constant.MapleCmd import EAdminCmd
+import common.utils.StrUtils as StrUtils
 from services.constant.AllError import AllError
 from services.actions.Action import Action
 from services.actions.admin.AdminToken import AdminToken
@@ -20,31 +20,30 @@ class AdminCmdAction(Action):
         self.adminUserRepository = AdminUserRepository ()
         self.adminTokenRepository = AdminTokenRepository()
         self.adminAppRepository = AdminAppRepository()
-        self.mapleCmd = MapleCmd()
 
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EAdminCmd().adminRegister.name] = lambda jdata: adminRegister(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminLogin.name] = lambda jdata: adminLogin(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminLogout.name] = lambda jdata: adminLogout(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminAddApp.name] = lambda jdata: addApp(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminDelApp.name] = lambda jdata: delApp(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminAppList.name] = lambda jdata: appList(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminModifyApp.name] = lambda jdata: modifyApp(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminAppCount.name] = lambda jdata: appCount(jdata)
+        self.funcMap[EAdminCmd.adminRegister.name] = lambda jdata: self.adminRegister(jdata)
+        self.funcMap[EAdminCmd.adminLogin.name] = lambda jdata: self.adminLogin(jdata)
+        self.funcMap[EAdminCmd.adminLogout.name] = lambda jdata: self.adminLogout(jdata)
+        self.funcMap[EAdminCmd.adminAddApp.name] = lambda jdata: self.addApp(jdata)
+        self.funcMap[EAdminCmd.adminDelApp.name] = lambda jdata: self.delApp(jdata)
+        self.funcMap[EAdminCmd.adminAppList.name] = lambda jdata: self.appList(jdata)
+        self.funcMap[EAdminCmd.adminModifyApp.name] = lambda jdata: self.modifyApp(jdata)
+        self.funcMap[EAdminCmd.adminAppCount.name] = lambda jdata: self.appCount(jdata)
         
-        self.funcMap[self.mapleCmd.EAdminCmd().adminStopApp.name] = lambda jdata: updateAppStatus(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminReadyApp.name] = lambda jdata: updateAppStatus(jdata)
-        self.funcMap[self.mapleCmd.EAdminCmd().adminRunApp.name] = lambda jdata: updateAppStatus(jdata)
+        self.funcMap[EAdminCmd.adminStopApp.name] = lambda jdata: self.updateAppStatus(jdata)
+        self.funcMap[EAdminCmd.adminReadyApp.name] = lambda jdata: self.updateAppStatus(jdata)
+        self.funcMap[EAdminCmd.adminRunApp.name] = lambda jdata: self.updateAppStatus(jdata)
 
     def adminRegister(self, jdata):
         if StrUtils.isEmail(jdata['email']) == False:
             return self.setError('admin', AllError.InvalidEmailFormat)
-        if self.adminUserRepository.getUserByEmail(jdata['email']) == None:
+        if self.adminUserRepository.getUserByEmail(jdata['email']) is not None:
             return self.setError('admin', AllError.ExistEmail)
         if len(jdata['password']) < 8:
             return self.setError('admin', AllError.ShortPasswordLengthThan8)
 
-        userId = StrUtils.getSha256Uuid('adminId:')
+        userId = StrUtils.getMapleUuid('adminId:')
         if self.adminUserRepository.insert(userId, jdata['email'], StrUtils.getSha256(jdata['password']), 'user', jdata['userName']) == False:
             return self.setError('admin', AllError.RegisterFailed)
         return self.setOk('admin', userId)
@@ -177,4 +176,4 @@ class AdminCmdAction(Action):
         else:
             if MultiDbHelper.instance().createDatabase(scode, jdata['host'], jdata['port'], jdata['userId'], jdata['password']) == False:
                 return self.setError('admin', AllError.FailedToCreateDatabase)
-            MultiDbHelper.instance().initMySql(scode, jdata['host'], jdata['port'], jdata['userId'], jdata['password'], scode)
+            MultiDbHelper.instance().initMySqlWithDatabase(scode, jdata['host'], jdata['port'], jdata['userId'], jdata['password'], scode)

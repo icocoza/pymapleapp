@@ -1,6 +1,6 @@
 import os, sys, json, datetime
-from services.constant.MapleCmd import MapleCmd
-from common.utils.StrUtils import StrUtils
+from services.constant.MapleCmd import EFriendCmd
+import common.utils.StrUtils as StrUtils
 from services.constant.AllError import AllError
 from services.actions.Action import Action
 
@@ -15,21 +15,20 @@ class FriendCmdAction(Action):
     def __init__(self):
         super().__init__()
 
-        self.mapleCmd = MapleCmd()
         self.friendRepository = FriendRepository()
         self.friendInfoRepository = FriendInfoRepository()
 
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EFriendCmd().addfriend.name] = lambda scode, session, jdata: self.addMessage(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EFriendCmd().delFriend.name] = lambda scode, session, jdata: self.delFriend(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EFriendCmd().changeFriendType.name] = lambda scode, session, jdata: self.changeFriendType(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EFriendCmd().getFriendList.name] = lambda scode, session, jdata: self.getFriendList(scode, session, jdata)
+        self.funcMap[EFriendCmd.addFriend.name] = lambda scode, session, jdata: self.addMessage(scode, session, jdata)
+        self.funcMap[EFriendCmd.delFriend.name] = lambda scode, session, jdata: self.delFriend(scode, session, jdata)
+        self.funcMap[EFriendCmd.changeFriendType.name] = lambda scode, session, jdata: self.changeFriendType(scode, session, jdata)
+        self.funcMap[EFriendCmd.getFriendList.name] = lambda scode, session, jdata: self.getFriendList(scode, session, jdata)
         
-        self.funcMap[self.mapleCmd.EFriendCmd().friendCount.name] = lambda scode, session, jdata: self.friendCount(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EFriendCmd().friendsInfo.name] = lambda scode, session, jdata: self.friendsInfo(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EFriendCmd().friendMeUser.name] = lambda scode, session, jdata: self.friendMeUser(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EFriendCmd().appendMeCount.name] = lambda scode, session, jdata: self.appendMeCount(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EFriendCmd().blockMeCount.name] = lambda scode, session, jdata: self.blockMeCount(scode, session, jdata)
+        self.funcMap[EFriendCmd.friendCount.name] = lambda scode, session, jdata: self.friendCount(scode, session, jdata)
+        self.funcMap[EFriendCmd.friendsInfo.name] = lambda scode, session, jdata: self.friendsInfo(scode, session, jdata)
+        self.funcMap[EFriendCmd.friendMeUser.name] = lambda scode, session, jdata: self.friendMeUser(scode, session, jdata)
+        self.funcMap[EFriendCmd.appendMeCount.name] = lambda scode, session, jdata: self.appendMeCount(scode, session, jdata)
+        self.funcMap[EFriendCmd.blockMeCount.name] = lambda scode, session, jdata: self.blockMeCount(scode, session, jdata)
 
     def addFriend(self, scode, session, jdata):
         userId = session['userId']

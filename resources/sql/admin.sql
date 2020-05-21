@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `adminUser` (
+CREATE TABLE IF NOT EXISTS `admin`.`adminUser` (
   `userId` varchar(64) NOT NULL,
   `email` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
@@ -11,21 +11,20 @@ CREATE TABLE IF NOT EXISTS `adminUser` (
   `lastAt` datetime DEFAULT CURRENT_TIMESTAMP,
   `leftAt` datetime DEFAULT NULL,
   `passwordAt` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `adminToken` (
+CREATE TABLE IF NOT EXISTS `admin`.`adminToken` (
   `userId` varchar(64) NOT NULL,
   `token` varchar(256) NOT NULL,
   `remoteIp` varchar(32) DEFAULT '',
   `reserved` varchar(64) DEFAULT NULL,
   `issuedAt` datetime DEFAULT CURRENT_TIMESTAMP,
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-CREATE TABLE IF NOT EXISTS `adminApp` (
+CREATE TABLE IF NOT EXISTS `admin`.`adminApp` (
   `appId` varchar(64) NOT NULL,
   `userId` varchar(64) NOT NULL,
   `scode` varchar(32) NOT NULL,
@@ -49,5 +48,5 @@ CREATE TABLE IF NOT EXISTS `adminApp` (
   `statusAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`appId`),
   KEY `idx_scode` (`scode`),
-  KEY `idx_email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idx_userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

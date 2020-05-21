@@ -1,29 +1,30 @@
 
-from Crypto.Cipher import Blowfish
+import base64
+import hashlib
+from Crypto.Cipher import AES
 from Crypto import Random
-from struct import pack
+ 
 import base62
 
-class CryptoHelper:
-    KEY = b'KOREAN_GEO_GRAPHICS_ON_KBS2_1001'
-    BS = Blowfish.block_size
+BLOCK_SIZE = 16
+pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
+unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
-    def enc(self, text):
-        iv = Random.new().read(BS)
-        cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, iv)
-        plen = BS - divmod(len(text), BS)[1]
-        padding = [plen]*plen
-        padding = pack('b'*plen, *padding)
-        ciphertext = iv + cipher.encrypt(text + padding)
-        return base62.encodebytes(ciphertext)
+PASSWORD = 'KOREAN_GEO_GRAPHICS_ON_KBS2_1001'
 
-    def dec(self, text):
-        ciphertext = base62.decodebytes(text)
-        iv = ciphertext[:BS]
-        ciphertext = ciphertext[BS:]
-        cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, iv)
-        msg = cipher.decrypt(ciphertext)
+def encrypt(plainText):
+    private_key = hashlib.sha256(PASSWORD.encode("utf-8")).digest()
+    plainText = pad(plainText)
+    iv = Random.new().read(AES.block_size)
+    cipher = AES.new(private_key, AES.MODE_CBC, iv)
+    #return base64.b64encode(iv + cipher.encrypt(raw))
+    return base62.encodebytes(iv + cipher.encrypt(plainText))
 
-        last_byte = msg[-1]
-        msg = msg[:- (last_byte if type(last_byte) is int else ord(last_byte))]
-        return repr(msg)
+
+def decrypt(cipherText):
+    private_key = hashlib.sha256(PASSWORD.encode("utf-8")).digest()
+    #enc = base64.b64decode(enc)
+    enc = base62.decodebytes(cipherText)
+    iv = cipherText[:16]
+    cipher = AES.new(private_key, AES.MODE_CBC, iv)
+    return unpad(cipher.decrypt(cipherText[16:]))

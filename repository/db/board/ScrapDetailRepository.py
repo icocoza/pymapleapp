@@ -6,7 +6,7 @@ sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 
 from repository.db.MultiDbRepository import MultiDbRepository
 
-class ScrapDetailRepository(DbReMultiDbRepositorypository):
+class ScrapDetailRepository(MultiDbRepository):
 
 	def _selectToJson(self, scode, results):
 		payload = []

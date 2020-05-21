@@ -45,3 +45,6 @@ class RedisManager:
 
     def brPop(self, key):
         return self.redis_client.brpop(key, timeout=3)
+
+    def lpush(self, key, value):
+        return self.redis_client.lpush(key, value)

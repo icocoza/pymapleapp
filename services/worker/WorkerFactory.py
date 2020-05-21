@@ -4,14 +4,14 @@ from services.worker.MapleWorker import MapleWorker
 class WorkerFactory:
 
     workerMap = {}
-    def createFactory(self, scode):
+    def createFactory(self, stype):
         #print(meta)
-        if scode in workerMap:
-            return workerMap[scode]
+        if stype in self.workerMap:
+            return self.workerMap[stype]
 
-        if scode == 'maple':
+        if stype == 'maple':
             worker = MapleWorker()
-            workerMap[scode] = worker
+            self.workerMap[stype] = worker
             return worker
         else:
             return None

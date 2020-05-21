@@ -1,10 +1,10 @@
-from AppProcessor import AppProcessor
+from AppPreprocessor import AppPreprocessor
 from services.scheduler.AirKoreaCollector import AirKoreaCollector
 
 class AppExecutor:
     
-    def start(self, type):
-        self.app = self._executor(type)
+    def start(self, serviceType, buildType):
+        self.app = self._executor(serviceType, buildType)
         if self.app != None:
             self.app.start()
             return True
@@ -15,8 +15,8 @@ class AppExecutor:
             self.app.stop()
         pass
 
-    def _executor(self, type):
-        print('Type: ', str(type))
-        if type == 'maple':
-            return AppProcessor()
+    def _executor(self, serviceType, buildType):
+        print('Type: ', str(serviceType))
+        if serviceType == 'maple':
+            return AppPreprocessor(serviceType, buildType)
         return None

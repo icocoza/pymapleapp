@@ -30,24 +30,28 @@ class MapleWorker:
         self.userFunctionMap.update(self.userCmdAction.funcMap)
         
         self.appFunctionMap = {}
-        self.functionMap.update(self.boardCmdAction.funcMap)
-        self.functionMap.update(self.channelCmdAction.funcMap)
-        self.functionMap.update(self.fileCmdAction.funcMap)
-        self.functionMap.update(self.friendCmdAction.funcMap)
-        self.functionMap.update(self.messageCmdAction.funcMap)
+        self.appFunctionMap.update(self.boardCmdAction.funcMap)
+        self.appFunctionMap.update(self.channelCmdAction.funcMap)
+        self.appFunctionMap.update(self.fileCmdAction.funcMap)
+        self.appFunctionMap.update(self.friendCmdAction.funcMap)
+        self.appFunctionMap.update(self.messageCmdAction.funcMap)
         
         self.signinToken = SigninToken()
 
     def work(self, jstr):
-        jdata = json.loads(jstr)
+        jsonobj = json.loads(jstr)
+        self.workJson(jsonobj['scode'], jsonobj['data'])
 
+    def workJson(self, jdata):
         scode = jdata['scode']
-        if scode in self.adminFunctionMap:
-            self.adminFunctionMap[scode](jdata)
-        elif scode in self.userFunctionMap:
-            self.userFunctionMap[scode](scode, jdata)
-        elif scode in self.appFunctionMap:
-            session = self.signinToken.parse(jdata['signinToken'])
-            self.appFunctionMap[scode](scode, session, jdata)
-
-    
+        data = jdata['data']
+        cmd = data['cmd']
+        #TODO this needs to check the api-key
+        if cmd in self.adminFunctionMap:
+            return self.adminFunctionMap[cmd](data)
+        elif cmd in self.userFunctionMap:
+            return self.userFunctionMap[cmd](scode, data)
+        elif cmd in self.appFunctionMap:
+            session = self.signinToken.parse(data['signinToken'])
+            return self.appFunctionMap[cmd](scode, session, data)
+        return None

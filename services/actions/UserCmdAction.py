@@ -1,6 +1,7 @@
-import os, sys, json, datetime
-from services.constant.MapleCmd import MapleCmd
-from common.utils.StrUtils import StrUtils
+import os, sys, json, datetime, time
+import hashlib
+from services.constant.MapleCmd import EUserCmd
+import common.utils.StrUtils as StrUtils
 from services.constant.AllError import AllError
 from services.actions.Action import Action
 from services.actions.user.LoginToken import LoginToken
@@ -18,7 +19,6 @@ class UserCmdAction(Action):
     def __init__(self):
         super().__init__()
 
-        self.mapleCmd = MapleCmd()
         self.loginToken = LoginToken()
         self.signinToken = SigninToken()
         self.appToken = AppToken()
@@ -29,17 +29,17 @@ class UserCmdAction(Action):
         self.userTokenRepository = UserTokenRepository()
 
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EUserCmd().registerIdPw.name] = lambda scode, jdata: self.registerIdPw(scode, jdata)
-        self.funcMap[self.mapleCmd.EUserCmd().registerEmail.name] = lambda scode, jdata: self.registerEmail(scode, jdata)
-        self.funcMap[self.mapleCmd.EUserCmd().registerPhone.name] = lambda scode, jdata: self.registerMobile(scode, jdata)
-        self.funcMap[self.mapleCmd.EUserCmd().userLogin.name] = lambda scode, jdata: self.userLogin(scode, jdata)
-        self.funcMap[self.mapleCmd.EUserCmd().anonymousLogin.name] = lambda scode, jdata: self.anonymousLogin(scode, jdata)
-        self.funcMap[self.mapleCmd.EUserCmd().userSignIn.name] = lambda scode, jdata: self.userSignIn(scode, jdata)
-        self.funcMap[self.mapleCmd.EUserCmd().userChangePW.name] = lambda scode, jdata: self.userChangePW(scode, jdata)
-        self.funcMap[self.mapleCmd.EUserCmd().findUserName.name] = lambda scode, jdata: self.findUserName(scode, jdata)
+        self.funcMap[EUserCmd.registerIdPw.name] = lambda scode, jdata: self.registerIdPw(scode, jdata)
+        self.funcMap[EUserCmd.registerEmail.name] = lambda scode, jdata: self.registerEmail(scode, jdata)
+        self.funcMap[EUserCmd.registerPhone.name] = lambda scode, jdata: self.registerMobile(scode, jdata)
+        self.funcMap[EUserCmd.userLogin.name] = lambda scode, jdata: self.userLogin(scode, jdata)
+        self.funcMap[EUserCmd.anonymousLogin.name] = lambda scode, jdata: self.anonymousLogin(scode, jdata)
+        self.funcMap[EUserCmd.userSignIn.name] = lambda scode, jdata: self.userSignIn(scode, jdata)
+        self.funcMap[EUserCmd.userChangePW.name] = lambda scode, jdata: self.userChangePW(scode, jdata)
+        self.funcMap[EUserCmd.findUserName.name] = lambda scode, jdata: self.findUserName(scode, jdata)
 
     def __registerUser(self, scode, authType, jdata, enableToken):
-        userId = jdata['userId'] if 'userId' in jdata else StrUtils.getSha256Uuid('userId:') #for anonymous user
+        userId = jdata['userId'] if 'userId' in jdata else StrUtils.getMapleUuid('userId:') #for anonymous user
 
         authSwitcher = {
             EUserAuthType.idpw: self.userAuthRepository.qInsertUserNamePw(scode, userId, jdata['userName'], StrUtils.getSha256(jdata['password'])),
@@ -52,6 +52,8 @@ class UserCmdAction(Action):
         queries = []
         if authQuery is not None:
             queries.append(authQuery)
+        if 'userName' not in jdata:
+            jdata['userName'] = 'No.' + str(int(round(time.time() * 1000)))
         queries.append(self.userRepository.qInsert(scode, userId, jdata['userName'], authQuery==None))
         queries.append(self.userTokenRepository.qInsertToken(scode, userId, jdata['uuid'], tokenId, token, enableToken))
         if self.userRepository.multiQueries(scode, queries) == False:
@@ -93,7 +95,7 @@ class UserCmdAction(Action):
         if err != AllError.ok:
             return self.setError(scode, err)
 
-        if self.userAuthRepository.findMobile(scode, jdata['mobileNo']):
+        if self.userAuthRepository.findMobile(scode, jdata['mobile']):
             return self.setError(scode, AllError.ExistPhoneNo)
         return self.__registerUser(scode, EUserAuthType.mobile, jdata, False)
 
@@ -128,8 +130,11 @@ class UserCmdAction(Action):
         if result == False:
             return self.setError(scode, AllError.FailedUpdateToken)
         
-        self.userPushRepository.insert(scode, userId, uuid, jdata['epid'])
-        self.userRepository.updateUserDetail(scode, userId, jdata['osType'], jdata['osVersion'], jdata['appVersion'])
+        self.userPushRepository.insert(scode, userId, uuid, jdata['epid'] if 'epid' in jdata else '')
+        self.userRepository.updateUserDetail(scode, userId, 
+                jdata['osType'] if 'osType' in jdata else '', 
+                jdata['osVersion'] if 'osVersion' in jdata else '', 
+                jdata['appVersion']if 'appVersion' in jdata else '')
         return self.setOk(scode, {'loginToken': token})
 
     def anonymousLogin(self, scode, jdata):
@@ -141,7 +146,7 @@ class UserCmdAction(Action):
         if self.userRepository.findUserName(scode, jdata['userName']) == True:
             return self.setError(scode, AllError.ExistUserName)
 
-        userId = StrUtils.getSha256Uuid('anonymous:')
+        userId = StrUtils.getMapleUuid('anonymous:')
         jdata['userId'] = userId
         jdata['password'] = jdata['userName'] + '!@#$'
 
@@ -157,8 +162,11 @@ class UserCmdAction(Action):
         if tokenRec == None:
             return self.setError(scode, AllError.UnauthorizedAnonymousUserId)
         
-        self.userPushRepository.insert(scode, userId, tokenRec['uuid'], jdata['epid'])
-        self.userRepository.updateUserDetail(scode, userId, jdata['osType'], jdata['osVersion'], jdata['appVersion'])
+        self.userPushRepository.insert(scode, userId, tokenRec['uuid'], jdata['epid'] if 'epid' in jdata else '')
+        self.userRepository.updateUserDetail(scode, userId, 
+                jdata['osType'] if 'osType' in jdata else '', 
+                jdata['osVersion'] if 'osVersion' in jdata else '', 
+                jdata['appVersion']if 'appVersion' in jdata else '')
         return self.setOk(scode, {'loginToken': tokenRec['token']})
 
     def userSignIn(self, scode, jdata):
@@ -180,10 +188,10 @@ class UserCmdAction(Action):
         if userRec == None:
             return self.setError(scode, AllError.MightBeLeftUser)
 
-        signTokenId, signToken = self.signinToken.create(scode, userId, token['uuid'], tokenRec['tokenId'])
+        signinTokenId, signinToken = self.signinToken.create(scode, userId, token['uuid'], tokenRec['tokenId'])
         self.userRepository.updateLastVisit(scode, userId)
 
-        return self.setOk(scode, {'signinToken': signTokenId, 'lastAt': userRec['lastAt'], 'userName': userRec['userName']})
+        return self.setOk(scode, {'signinToken': signinToken, 'lastAt': userRec['lastAt'], 'userName': userRec['userName']})
 
     def userChangePW(self, scode, jdata):
         token = self.signinToken.parse(jdata['signinToken'])
@@ -192,15 +200,22 @@ class UserCmdAction(Action):
 
         if self.signinToken.isExpiredSigninToken(token['startAt']):
             return self.setError(AllError.ExpiredSigninToken)
+        if 'password' not in jdata:
+            return self.setError(AllError.EmptyOldPassword)
         if len(jdata['newpw'])<8:
             return self.setError(AllError.passwordMoreThan8Characters)
-        userId = jdata['userId']
-        authRec = self.userAuthRepository.getUser(scode, userId)
+
+        oldPasswd = hashlib.sha256(jdata['password'].encode()).hexdigest()
+        newPasswd = hashlib.sha256(jdata['newpw'].encode()).hexdigest()
+
+        authRec = self.userAuthRepository.getUser(scode, token['userId'])
         if authRec == None:
             return self.setError(AllError.MightBeLeftUser)
+        if authRec['password'] != oldPasswd:
+            return self.setError(AllError.MismatchOldPassword)
         if authRec['password'] == jdata['newpw']:
-            return self.setError(AllError.WrongPassword)
-        if self.userAuthRepository.updatePw(scode, userId, jdata['newpw']) == False:
+            return self.setError(AllError.SameWithOldPassword)
+        if self.userAuthRepository.updatePw(scode, token['userId'], jdata['newpw']) == False:
             return self.setError(AllError.FailToChangePW)
         return self.setOk(scode, "Success")
 

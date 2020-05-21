@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from common.utils.CryptoHelper import CryptoHelper
-from common.utils.StrUtils import StrUtils
+import common.utils.CryptoHelper as CryptoHelper
+import common.utils.StrUtils as StrUtils
 import common.utils.keygen as keygen
 
 class SigninToken:
@@ -10,7 +10,7 @@ class SigninToken:
         #expireAt = datetime.now() + timedelta(days=self.EXPIRE_DAYS)
         startAt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        tokenId = StrUtils.getSha256Uuid('tokenId:')
+        tokenId = StrUtils.getMapleUuid('tokenId:')
         token = CryptoHelper.enc(tokenId + chr(31) + loginTokenId + chr(31) + scode + chr(31) + userId + chr(31) + userName + chr(31) + uuid + chr(31) + startAt)
         
         return tokenId, token

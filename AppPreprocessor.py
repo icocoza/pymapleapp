@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
-import time, logging, threading
+import os, time, logging, threading
 import numpy, json
 from datetime import datetime, timedelta
 
@@ -17,11 +17,19 @@ from services.worker.WorkerFactory import WorkerFactory
 
 import common.utils.ExceptionUtil as exutil
 
-APP_QUEUE_DATA = 'app.queue.data'
-class AppProcessor(DbConnectionListener):
+REDIS_QUEUE_DATA = 'maple.collector'
+REDIS_QUEUE_DATA_SERVER = 'maple.collector.server:'
+
+class AppPreprocessor(DbConnectionListener):
     
-    def __init__(self):
+    def __init__(self, serviceType, buildType):
         self.threading = True
+
+        self.workerFactory = WorkerFactory()
+        if buildType!='dev':
+            RedisManager.instance().initRedisSentinel(appconfig.redis_host_port, appconfig.redis_master, appconfig.redis_password)
+        else:
+            RedisManager.instance().initRedisSingle('127.0.0.1', 6379)
 
         self.onEventDbConnect = EventHook()
         self.onEventDbConnect += self.onDbConnected
@@ -29,13 +37,26 @@ class AppProcessor(DbConnectionListener):
         self.onEventDbError += self.onDbError
         self.onEventDbDisconnect = EventHook()
         self.onEventDbDisconnect += self.onDbDisconnected
-        DbHelper().initMysqlWithDefault(self)
 
-        RedisManager.instance().initRedisSentinel(appconfig.redis_host_port, appconfig.redis_master, appconfig.redis_password)
+        self.dbHelper = DbHelper()
+        self.dbHelper.initMysql(self)
 
-        self.workerFactory = WorkerFactory()
         pass
     
+    def onDbConnected(self, dbName):
+        if dbName is 'admin':
+            self.__initializeAdminDatabase()
+        logging.info(dbName)
+
+    def onDbDisconnected(self, dbName):
+        logging.info('Disconnected: ' + dbName)
+        if dbName != 'admin':
+            time.sleep(3)
+            self.dbHelper.initMysqlWithDefault(self)
+    
+    def onDbError(self, dbName):  #db manager
+        logging.info('Error: ' + dbName)
+
     def start(self):
         self.redisQueueThread = threading.Thread(target=self.threadRedisQueueFunc)
         self.redisQueueThread.start()
@@ -46,40 +67,52 @@ class AppProcessor(DbConnectionListener):
 
     def onRedisQueueData(self, data):
         jdata = json.loads(data)
+        if 'server' not in jdata or 'sessionId' not in jdata:
+            logging.error('Invalid Packet\n' + data)
+            return
         if 'stype' in jdata:
-            worker = self.workerFactory(jdata['stype'])
-            #worker...
+            worker = self.workerFactory.createFactory(jdata['stype'])
+            result = worker.workJson(jdata)
+            result['sessionId'] = jdata['sessionId']
+            RedisManager.instance().lpush(REDIS_QUEUE_DATA_SERVER+jdata['server'], str(result))
         else:
             logging.error(f'Unknown Servie Type {jdata}')
-
-    def onDbConnected(self, status):        
-        pass
-
-    def onDbDisconnected(self, status):
-        logging.error(status)
-        time.sleep(3)
-        if status == 'mysql':
-            DbHelper().initMysqlWithDefault(self)
-        pass
-    
-    def onDbError(self, status):  #db manager
-        logging.error(status)
-        pass
 
     def threadRedisQueueFunc(self): #Read Redis Queue
         queueCheckPointAt = datetime.now()
         while self.threading:
             try:
-                if queueCheckPointAt < datetime.now() - timedelta(seconds=5):
-                    RedisManager.instance().setTtl('iot.sensor.data.queue', 'queue', 10)
-                    queueCheckPointAt = datetime.now()
+                # if queueCheckPointAt < datetime.now() - timedelta(seconds=10):
+                #     RedisManager.instance().setTtl(REDIS_QUEUE_DATA + '.id:'+, 'queue', 10)
+                #     queueCheckPointAt = datetime.now()
 
-                data = RedisManager.instance().brPop(APP_QUEUE_DATA)
+                data = RedisManager.instance().brPop(REDIS_QUEUE_DATA)
                 if data == None:
                     time.sleep(3)
                     continue
                 data = data[1].decode('utf-8')
                 self.onRedisQueueData(data)
             except Exception as ex:
-                exutil.PrintException()
+                exutil.printException()
                 time.sleep(3)            
+
+    def __initializeAdminDatabase(self):
+        if self.dbHelper.existDatabase(appconfig.dbname) == False:
+            if self.dbHelper.createDatabase(appconfig.dbname) == True:
+                #self.dbHelper.useDatabase(appconfig.dbname)
+                self.__createAdminTables()
+        self.dbHelper.closeMySql()
+        self.dbHelper.initMysqlWithDefault(self) #connect to admin database
+
+
+    def __createAdminTables(self):
+        sqlFile = os.getcwd() + "/resources/sql/admin.sql"
+        file = open(sqlFile,mode='r')
+        filetext = file.read()
+        file.close()
+        tableQueries = filetext.split("\n\n", -1)
+
+        for table in tableQueries:
+            self.dbHelper.nonSelect(table)
+        pass
+ 

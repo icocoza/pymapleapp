@@ -1,6 +1,6 @@
 import os, sys, json, datetime
-from services.constant.MapleCmd import MapleCmd
-from common.utils.StrUtils import StrUtils
+from services.constant.MapleCmd import EBoardCmd
+import common.utils.StrUtils as StrUtils
 from common.utils.ImageTool import ImageTool
 from services.constant.AllError import AllError
 from services.actions.Action import Action
@@ -47,42 +47,41 @@ class BoardCmdAction(Action):
         self.scrapRepository = ScrapRepository()
         self.fileRepository = FileRepository()
         
-        self.mapleCmd = MapleCmd()
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EBoardCmd.addBoard.name] = lambda scode, session, jdata: self.addBoard(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.delBoard.name] = lambda scode, session, jdata: self.delBoard(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.updateBoardTitle.name] = lambda scode, session, jdata: self.updateBoardTitle(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.updateBoardContent.name] = lambda scode, session, jdata: self.updateBoardContent(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.updateBoardCategory.name] = lambda scode, session, jdata: self.updateBoardCategory(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.updateBoard.name] = lambda scode, session, jdata: self.updateBoard(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.getBoardList.name] = lambda scode, session, jdata: self.getBoardList(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.getBoardContent.name] = lambda scode, session, jdata: self.getBoardContent(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.incBoardLike.name] = lambda scode, session, jdata: self.incBoardLike(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.incBoardDislike.name] = lambda scode, session, jdata: self.incBoardDislike(scode, session, jdata)
+        self.funcMap[EBoardCmd.addBoard.name] = lambda scode, session, jdata: self.addBoard(scode, session, jdata)
+        self.funcMap[EBoardCmd.delBoard.name] = lambda scode, session, jdata: self.delBoard(scode, session, jdata)
+        self.funcMap[EBoardCmd.updateBoardTitle.name] = lambda scode, session, jdata: self.updateBoardTitle(scode, session, jdata)
+        self.funcMap[EBoardCmd.updateBoardContent.name] = lambda scode, session, jdata: self.updateBoardContent(scode, session, jdata)
+        self.funcMap[EBoardCmd.updateBoardCategory.name] = lambda scode, session, jdata: self.updateBoardCategory(scode, session, jdata)
+        self.funcMap[EBoardCmd.updateBoard.name] = lambda scode, session, jdata: self.updateBoard(scode, session, jdata)
+        self.funcMap[EBoardCmd.getBoardList.name] = lambda scode, session, jdata: self.getBoardList(scode, session, jdata)
+        self.funcMap[EBoardCmd.getBoardContent.name] = lambda scode, session, jdata: self.getBoardContent(scode, session, jdata)
+        self.funcMap[EBoardCmd.incBoardLike.name] = lambda scode, session, jdata: self.incBoardLike(scode, session, jdata)
+        self.funcMap[EBoardCmd.incBoardDislike.name] = lambda scode, session, jdata: self.incBoardDislike(scode, session, jdata)
 
-        self.funcMap[self.mapleCmd.EBoardCmd.addReply.name] = lambda scode, session, jdata: self.addReply(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.delReply.name] = lambda scode, session, jdata: self.delReply(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.replyList.name] = lambda scode, session, jdata: self.replyList(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.addVote.name] = lambda scode, session, jdata: self.addVote(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.voteItemList.name] = lambda scode, session, jdata: self.voteItemList(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.selectVoteItem.name] = lambda scode, session, jdata: self.selectVoteItem(scode, session, jdata)
+        self.funcMap[EBoardCmd.addReply.name] = lambda scode, session, jdata: self.addReply(scode, session, jdata)
+        self.funcMap[EBoardCmd.delReply.name] = lambda scode, session, jdata: self.delReply(scode, session, jdata)
+        self.funcMap[EBoardCmd.replyList.name] = lambda scode, session, jdata: self.replyList(scode, session, jdata)
+        self.funcMap[EBoardCmd.addVote.name] = lambda scode, session, jdata: self.addVote(scode, session, jdata)
+        self.funcMap[EBoardCmd.voteItemList.name] = lambda scode, session, jdata: self.voteItemList(scode, session, jdata)
+        self.funcMap[EBoardCmd.selectVoteItem.name] = lambda scode, session, jdata: self.selectVoteItem(scode, session, jdata)
 
-        self.funcMap[self.mapleCmd.EBoardCmd.updateVote.name] = lambda scode, session, jdata: self.updateVote(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.changeVoteSelection.name] = lambda scode, session, jdata: self.changeVoteSelection(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EBoardCmd.getVoteInfoList.name] = lambda scode, session, jdata: self.getVoteInfoList(scode, session, jdata)
+        self.funcMap[EBoardCmd.updateVote.name] = lambda scode, session, jdata: self.updateVote(scode, session, jdata)
+        self.funcMap[EBoardCmd.changeVoteSelection.name] = lambda scode, session, jdata: self.changeVoteSelection(scode, session, jdata)
+        self.funcMap[EBoardCmd.getVoteInfoList.name] = lambda scode, session, jdata: self.getVoteInfoList(scode, session, jdata)
 
         self.imageTool = ImageTool()
 
-    def __addBoard(self, scode, session, jdata):
+    def __addBoard(self, scode, session, jdata, scrapIds):
         userId = session['userId']
         userName = session['userName']
-        boardId = StrUtils.getSha256Uuid('boardId:')
+        boardId = StrUtils.getMapleUuid('boardId:')
 
         userRec = self.userRepository.getUser(scode, userId)
         if userRec == None or userRec['leftAt'] != None:
             return self.setError(scode, AllError.InvalidUser)
         if self.boardRepository.insert(scode, boardId, userId, userName, jdata['title'], self._getShortContent(jdata['content']), 
-                                       jdata['hasImage'], jdata['hasFile'], jdata['category'], jdata['contentType']) == False:
+                                       jdata['hasImage'], jdata['hasFile'], jdata['category'], jdata['contentType'] if 'contentType' not in jdata else 'text') == False:
             return self.setError(scode, AllError.FailAddBoard)
         
         self.boardContentRepository.insert(scode, boardId, userId, jdata['content'])
@@ -95,11 +94,10 @@ class BoardCmdAction(Action):
             if self.imageTool.cropImageByFilename(scode, userId, appconfig.upload_path, fileRec['fileName'], appconfig.crop_path):
                 self.fileRepository.updateCropped(scode, fileRec['fileId'], True)
 
-        if 'scrapIds' in jdata and len(jdata['scrapIds']) > 0:
-            queries = []
-            for scrapId in jdata['scrapIds']:
-                queries.append(self.boardScrapRepository.qInsertScrap(scode, boardId, scrapId))
-            self.boardScrapRepository.multiQueries(scode, queries)
+        queries = []
+        for scrapId in scrapIds:
+            queries.append(self.boardScrapRepository.qInsertScrap(scode, boardId, scrapId))
+        self.boardScrapRepository.multiQueries(scode, queries)
 
         return self.setOk(scode, {'boardId': boardId})
 
@@ -115,7 +113,7 @@ class BoardCmdAction(Action):
             title, subtitle, body, img_url = htmlScrapper.scrap(url)
             if title is None:
                 continue
-            scrapId = StrUtils.getSha256Uuid('scrapId:')
+            scrapId = StrUtils.getMapleUuid('scrapId:')
             queries = []
             queries.append(self.scrapRepository.qInsertScrap(scode, scrapId, url, title, subtitle))
             queries.append(self.scrapBodyRepository.qInsertScrapBody(scode, scrapId, body))
@@ -133,7 +131,7 @@ class BoardCmdAction(Action):
 
     def addBoard(self, scode, session, jdata):
         scrapIds = self.__findAndAddScrap(scode, jdata)
-        return self.__addBoard(scode, session, jdata)
+        return self.__addBoard(scode, session, jdata, scrapIds)
 
     def delBoard(self, scode, session, jdata):
         userId = session['userId']
@@ -213,7 +211,7 @@ class BoardCmdAction(Action):
 
         scrapList = self.scrapDetailRepository.getScrapDetailList(scode, boardId)
         likeRec = self.boardLikeRepository.getPreference(scode, boardId, content['userId'])
-        files = self.uploadFileRepository.getFileList(scode, boardId)
+        files = self.fileRepository.getFileList(scode, boardId)
         voteItems = self.boardVoteItemRepository.getVoteItemList(scode, boardId)
 
         return self.setOk(scode, {'scrapList': scrapList, 'like': likeRec, 'files': files, 'voteItems': voteItems, 'content': content})
@@ -227,7 +225,7 @@ class BoardCmdAction(Action):
             return self.setError(scode, AllError.NotExistLikedUser)
         self.boardCountRepository.incLike(scode, boardId, jdata['added'])
         countRec = self.boardCountRepository.getCountInfo(scode, boardId)
-        return self.setOk(scode, {'preference': jdata['preference'], 'added': jdata['added'], 'count': countRec})
+        return self.setOk(scode, {'boardId': boardId, 'preference': jdata['preference'], 'added': jdata['added'], 'count': countRec})
 
     def incBoardDislike(self, scode, session, jdata):
         userId = session['userId']
@@ -243,12 +241,12 @@ class BoardCmdAction(Action):
     def addReply(self, scode, session, jdata):
         userId = session['userId']
         boardId = jdata['boardId']
-        replyId = StrUtils.getSha256Uuid('replyId:')
+        replyId = StrUtils.getMapleUuid('replyId:')
 
         self.boardReplyRepository.insert(scode, replyId, boardId, jdata['parentReplyId'], userId, session['userName'], jdata['depth'], jdata['body'])
-        reply = self.boardReplyRepository.getList(scode, boardId, 0, 15)
+        replyList = self.boardReplyRepository.getList(scode, boardId, 0, 15)
 
-        return self.setOk(scode, {'replyId': replyId, 'reply': reply})
+        return self.setOk(scode, {'replyId': replyId, 'replyList': replyList})
 
     def delReply(self, scode, session, jdata):
         userId = session['userId']
@@ -272,20 +270,20 @@ class BoardCmdAction(Action):
         if res['result'] != 'ok':
             return res
         userId = session['userId']
-        boardId = jdata['data']['boardId']
+        boardId = jdata['boardId']
 
         if self.boardVoteRepository.insert(scode, boardId, userId, session['userName'], jdata['expiredAt']) == False:
             self.boardRepository.deleteBoard(scode, boardId, userId)
             return self.setError(scode, AllError.InvalidParameter)        
         for voteItem in jdata['voteItems']:
-            voteId = StrUtils.getSha256Uuid('voteId:')
+            voteId = StrUtils.getMapleUuid('voteId:')
             self.boardVoteItemRepository.insert(scode, boardId, voteId, voteItem)        
         return self.setOk(scode, {'boardId': boardId})
 
     def voteItemList(self, scode, session, jdata):
         boardId = jdata['boardId']
         voteItemList = self.boardVoteItemRepository.getVoteItemList(scode, boardId)
-        return self.setOk(scode, voteItemList)
+        return self.setOk(scode, {'boardId': boardId, 'voteItems': voteItemList})
 
     def selectVoteItem(self, scode, session, jdata):
         userId = session['userId']
@@ -305,7 +303,7 @@ class BoardCmdAction(Action):
             return self.setError(scode, AllError.FailDelVoteUser)
 
         voteItemList = self.boardVoteItemRepository.getVoteItemList(scode, boardId)
-        return self.setOk(scode, voteItemList)
+        return self.setOk(scode, {'boardId': boardId, 'voteItems': voteItemList})
 
 
     def updateVote(self, scode, session, jdata):
@@ -326,16 +324,16 @@ class BoardCmdAction(Action):
             self.boardVoteRepository.updateClose(scode, boardId, userId, jdata['closed'])
         if 'voteItems' in jdata and len(jdata['voteItems']) > 0:
             for voteItem in jdata['voteItems']:
-                self.boardVoteItemRepository.updateVoteText(scode, boardId, voteItem['voteId'], voteItem['voteText'])
+                self.boardVoteItemRepository.updateVoteText(scode, boardId, voteItem['voteItemId'], voteItem['itemText'])
         return self.setOk(scode, boardId)
 
     def changeVoteSelection(self, scode, session, jdata):
         userId = session['userId']
         boardId = jdata['boardId']
 
-        if self.boardVoteUserRepository.updateSelectItem(scode, userId, boardId, jdata['voteId']) == False:
+        if self.boardVoteUserRepository.updateSelectItem(scode, userId, boardId, jdata['voteItemId']) == False:
             return self.setError(scode, AllError.NotExistVoteInfo)
-        return self.setOk(scode, {'boardId': boardId, 'voteId': jdata['voteId']})
+        return self.setOk(scode, {'boardId': boardId, 'voteItemId': jdata['voteItemId']})
 
     def getVoteInfoList(self, scode, session, jdata):
         voteInfos = self.boardVoteRepository.getVoteInfoList(scode, jdata['boardIdds'])

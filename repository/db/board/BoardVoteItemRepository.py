@@ -37,7 +37,7 @@ class BoardVoteItemRepository(MultiDbRepository):
 	
 
 	def getVoteItemList(self, scode, boardId):
-		sql = f"SELECT * FROM voteItem WHERE boardId='{boardId}'"
+		sql = f"SELECT voteItemId, itemText, selectCount FROM voteItem WHERE boardId='{boardId}'"
 		return self.selectQuery(scode, sql)
 	
 	

@@ -33,7 +33,10 @@ RUN pip3 install \
     pybase62 \
     beautifulsoup4 \
     tqdm \
-    pillow
+    pillow \
+    pycryptodome \
+    pycryptodomex \
+    enum34
 
 RUN pip3 install tensorflow==1.14.0
 

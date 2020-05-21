@@ -1,0 +1,26 @@
+Admin
+
+* Request
+{
+    "version": "v0.1",
+    "stype": "maple",    # default is ‘maple'
+    "scode": "admin",
+    "data": {
+        "cmd": "adminRegister",
+        "email": "email@email.com",
+        "password": "password123",
+        "userName": "user123",
+        "mobileNo": "01012341234"
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",
+    "scode": "admin",
+    "data": {
+        "cmd": "adminLogin",
+        "email": "email@email.com",
+        "password": "password123"
+    }
+}

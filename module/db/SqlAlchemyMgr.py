@@ -19,7 +19,7 @@ class SqlAlchemyMgr:
         cls.instance = cls._getInstance
         return cls._instance
 
-    def initMySql(self, host, port, user, passwd, dbname, cbAndEvt):
+    def initMySqlWithDatabase(self, host, port, user, passwd, dbname, cbAndEvt):
         try:
             config = f"mysql+pymysql://{user}:{passwd}@{host}:{port}/{dbname}"
             self.sqlEngine       = create_engine(config, pool_recycle=3600)

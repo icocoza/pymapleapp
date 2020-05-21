@@ -11,7 +11,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 import common.config.appconfig as appconfig
 
-from repository.db.AirKoreaQualityRepository import AirKoreaQualityRepository
 from module.db.DbHelper import DbHelper
 from common.inf.DbConnectionListener import DbConnectionListener
 from common.utils.EventHook import EventHook
@@ -35,7 +34,7 @@ class AirKoreaCollector(DbConnectionListener):
         self.numOfRows = 150
         self.ver = 1.3
 
-        self.airKoreaQualityRepository = AirKoreaQualityRepository()
+        #self.airKoreaQualityRepository = AirKoreaQualityRepository()
         pass
     
     def start(self):

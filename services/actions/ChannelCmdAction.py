@@ -1,6 +1,6 @@
 import os, sys, json, datetime
-from services.constant.MapleCmd import MapleCmd
-from common.utils.StrUtils import StrUtils
+from services.constant.MapleCmd import EChannelCmd
+import common.utils.StrUtils as StrUtils
 from services.constant.AllError import AllError
 from services.actions.Action import Action
 
@@ -14,22 +14,21 @@ class ChannelCmdAction(Action):
     def __init__(self):
         super().__init__()
 
-        self.mapleCmd = MapleCmd()
         self.channelRepository = ChannelRepository()
         self.myChannelRepository = MyChannelRepository()
         self.myChannelExtRepository = MyChannelExtRepository()
         self.channelLastMsgRepository = ChannelLastMsgRepository()
     
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EChannelCmd().channelCreate.name] = lambda scode, session, jdata: self.channelCreate(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EChannelCmd().channelExit.name] = lambda scode, session, jdata: self.channelExit(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EChannelCmd().channelEnter.name] = lambda scode, session, jdata: self.channelEnter(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EChannelCmd().channelInvite.name] = lambda scode, session, jdata: self.channelInvite(scode, session, jdata)
+        self.funcMap[EChannelCmd.channelCreate.name] = lambda scode, session, jdata: self.channelCreate(scode, session, jdata)
+        self.funcMap[EChannelCmd.channelExit.name] = lambda scode, session, jdata: self.channelExit(scode, session, jdata)
+        self.funcMap[EChannelCmd.channelEnter.name] = lambda scode, session, jdata: self.channelEnter(scode, session, jdata)
+        self.funcMap[EChannelCmd.channelInvite.name] = lambda scode, session, jdata: self.channelInvite(scode, session, jdata)
         
-        self.funcMap[self.mapleCmd.EChannelCmd().myChannel.name] = lambda scode, session, jdata: self.myChannel(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EChannelCmd().myChannelCount.name] = lambda scode, session, jdata: self.myChannelCount(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EChannelCmd().channelLastMessage.name] = lambda scode, session, jdata: self.channelLastMessage(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EChannelCmd().channelInfos.name] = lambda scode, session, jdata: self.channelInfos(scode, session, jdata)
+        self.funcMap[EChannelCmd.myChannel.name] = lambda scode, session, jdata: self.myChannel(scode, session, jdata)
+        self.funcMap[EChannelCmd.myChannelCount.name] = lambda scode, session, jdata: self.myChannelCount(scode, session, jdata)
+        self.funcMap[EChannelCmd.channelLastMessage.name] = lambda scode, session, jdata: self.channelLastMessage(scode, session, jdata)
+        self.funcMap[EChannelCmd.channelInfos.name] = lambda scode, session, jdata: self.channelInfos(scode, session, jdata)
 
     def channelCreate(self, scode, session, jdata):
         userId = session['userId']
@@ -42,7 +41,7 @@ class ChannelCmdAction(Action):
             if channelRec != None:
                 self.myChannelRepository.insert(scode, userId, channelRec['channelId'])
                 return self.Ok(scode, channelRec['channelId'])
-        channelId = StrUtils.getSha256Uuid('channelId:')
+        channelId = StrUtils.getMapleUuid('channelId:')
         attendees = '|'.join([ attendee for attendee in jdata['attendees']])
         self.channelRepository.insert(scode, channelId, userId, attendees, EChannelType.oneToOne if attendeeCount == 2 else EChannelType.group)
         self.myChannelRepository.insert(scode, userId, channelRec['channelId'])

@@ -9,7 +9,7 @@ class AdminTokenRepository(DbRepository):
 
     def upsert(self, userId, token, remoteIp):
         sql = f"INSERT INTO adminToken (userId, token, remoteIp) VALUES('{userId}', '{token}', '{remoteIp}') \
-                ON DUPLICATE KEY UPDATE token={token}, remoteIp={remoteIp}, issuedAt=now()"
+                ON DUPLICATE KEY UPDATE token='{token}', remoteIp='{remoteIp}', issuedAt=now()"
         return self.update(sql)
 
     def updateToken(self, userId, token):

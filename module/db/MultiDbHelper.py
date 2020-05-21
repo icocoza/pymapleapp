@@ -36,9 +36,9 @@ class MultiDbHelper(DbConnectionListener):
         return MultiDbManager.instance().hasScode(scode)
 
     def initMysqlWithDefault(self, scode):
-        return self.initMySql(scode, appconfig.DB_HOST, appconfig.DB_PORT, appconfig.DB_USER, appconfig.DB_PASSWORD, appconfig.DB_NAME, self)
+        return self.initMySqlWithDatabase(scode, appconfig.dbhost, appconfig.dbport, appconfig.dbuser, appconfig.dbpassword, appconfig.dbname, self)
 
-    def initMySql(self, scode, host, port, user, passwd, dbname):
+    def initMySqlWithDatabase(self, scode, host, port, user, passwd, dbname):
         return MultiDbManager.instance().addMySql(scode, host, port, user, passwd, dbname, self)
 
     def closeMySql(self, scode):
@@ -50,7 +50,7 @@ class MultiDbHelper(DbConnectionListener):
         self.closeMySql(scode)
 
     def createDatabaseWithDefault(self, scode):
-        return self.createDatabase(scode, appconfig.DB_HOST, appconfig.DB_PORT, appconfig.DB_USER, appconfig.DB_PASSWORD)
+        return self.createDatabase(scode, appconfig.dbhost, appconfig.dbport, appconfig.dbuser, appconfig.dbpassword)
 
     def createDatabase(self, scode, host, port, user, passwd):
         return self.databaseMaker.createDatabase(scode, host, port, user, passwd)

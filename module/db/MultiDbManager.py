@@ -19,7 +19,7 @@ class MultiDbManager:
     dbManagerMap = {}
     def addMySql(self, scode, host, port, user, passwd, dbname, cbAndEvt):
         dbManager = MySqlManager()
-        if dbManager.initMySql(host, port, user, passwd, dbname, cbAndEvt) == True:
+        if dbManager.initMySqlWithDatabase(host, port, user, passwd, dbname, cbAndEvt) == True:
             self.dbManagerMap[scode] = dbManager
             return True
         return False
@@ -29,7 +29,7 @@ class MultiDbManager:
         
     def addMysqlWithDefault(self, cbAndEvt):
         dbManager = MySqlManager()
-        if dbManager.initMySql(appconfig.DB_HOST, appconfig.DB_PORT, appconfig.DB_USER, appconfig.DB_PASSWORD, appconfig.DB_NAME, cbAndEvt) == True:
+        if dbManager.initMySqlWithDatabase(appconfig.dbhost, appconfig.dbport, appconfig.dbuser, appconfig.dbpassword, appconfig.dbname, cbAndEvt) == True:
             self.dbManagerMap[scode] = dbManager
             return True
         return False

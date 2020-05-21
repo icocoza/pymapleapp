@@ -19,15 +19,15 @@ def _main(argv=None):
             print(f'You have invalid type parameter({buildType}).\nYou have to set "dev" or "prod" for second param.')
             return
 
-        InitLogger().initLogging()
+        InitLogger.initLogging()
         Config().init(buildType)
 
         appExecutor = AppExecutor()
-        if appExecutor.start(serviceType) == False:
+        if appExecutor.start(serviceType, buildType) == False:
             print(f'You have wrong service type param({serviceType}). Service type is "maple".')
             sys.exit()
     except Exception as ex:
-        print(ex)
+        exutil.printException()
 
 def main(argv=None):
     try:        

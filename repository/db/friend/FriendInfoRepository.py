@@ -8,7 +8,7 @@ from repository.db.MultiDbRepository import MultiDbRepository
 
 class FriendInfoRepository(MultiDbRepository):
 
-	def getFriendMeList(self, scode, userId, friendType, offset, ount):
+	def getFriendMeList(self, scode, userId, friendType, offset, count):
 		sql = f"SELECT userId, userName, userType, email FROM userAuth WHERE userId IN (SELECT userId FROM friend WHERE friendId='{userId}' LIMIT {offset}, {count})"
 		if('all' != friendType):
 			sql = f"SELECT userId, userName, userType, email FROM userAuth WHERE userId IN (SELECT userId FROM friend WHERE friendId='{userId}' AND friendType='{friendType}') LIMIT {offset}, {count}"

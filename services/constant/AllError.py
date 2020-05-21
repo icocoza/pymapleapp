@@ -78,7 +78,6 @@ class AllError(Enum):
 	
 	FailedToUpdateApp = auto()
 	
-	NoListData = auto()
 	NotExistUser = auto()
 	
 	mismatch_token_or_expired_token = auto()
@@ -97,7 +96,8 @@ class AllError(Enum):
 	userIdMoreThan6Characters = auto()
 	userid_alphabet_and_digit = auto()
 	passwordMoreThan8Characters = auto()
-	
+	EmptyOldPassword = auto()
+
 	InvalidMobileFormat = auto()
 	smscode_size_4 = auto()
 	mismatch_smscode = auto()
@@ -128,7 +128,8 @@ class AllError(Enum):
 	failed_phone_Verify = auto()
 	FailToChangePW = auto()
 	FailedUpdateToken = auto()
-	mismatch_pw = auto()
+	MismatchOldPassword = auto()
+	SameWithOldPassword = auto()
 	WrongPassword = auto()
 	
 	eNotExistIds = auto()
@@ -157,10 +158,7 @@ class AllError(Enum):
 	WrongAptCode = auto()
 	VoteItemHas2More = auto()
 	
-	NoSession = auto()
 	NoChannel = auto()
-	NoData = auto()
-	InvalidParameter = auto()
 	FailToUpdate = auto()
 
 	complete = auto()

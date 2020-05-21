@@ -9,7 +9,7 @@ class DbRepository:
 
     def selectOne(self, sql):
         result = MySqlManager.instance().select(sql)
-        if len(result) < 1:
+        if result is None or len(result) < 1:
             return None
         return result[0]
         

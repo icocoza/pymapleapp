@@ -1,6 +1,6 @@
 import os, sys, json, datetime
-from services.constant.MapleCmd import MapleCmd
-from common.utils.StrUtils import StrUtils
+from services.constant.MapleCmd import EMessageCmd
+import common.utils.StrUtils as StrUtils
 from services.constant.AllError import AllError
 from services.actions.Action import Action
 
@@ -20,7 +20,6 @@ class MessageCmdAction(Action):
     def __init__(self):
         super().__init__()
 
-        self.mapleCmd = MapleCmd()
         self.msgRepository = MsgRepository()
         self.msgReadRepository = MsgReadRepository()
         self.msgDelRepository = MsgDelRepository()
@@ -30,16 +29,16 @@ class MessageCmdAction(Action):
         self.channelLastMsgRepository = ChannelLastMsgRepository()
 
         self.funcMap = {}
-        self.funcMap[self.mapleCmd.EMessageCmd().addMessage.name] = lambda scode, session, jdata: self.addMessage(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EMessageCmd().syncMessage.name] = lambda scode, session, jdata: self.syncMessage(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EMessageCmd().readMessage.name] = lambda scode, session, jdata: self.readMessage(scode, session, jdata)
-        self.funcMap[self.mapleCmd.EMessageCmd().delMessage.name] = lambda scode, session, jdata: self.delMessage(scode, session, jdata)
+        self.funcMap[EMessageCmd.addMessage.name] = lambda scode, session, jdata: self.addMessage(scode, session, jdata)
+        self.funcMap[EMessageCmd.syncMessage.name] = lambda scode, session, jdata: self.syncMessage(scode, session, jdata)
+        self.funcMap[EMessageCmd.readMessage.name] = lambda scode, session, jdata: self.readMessage(scode, session, jdata)
+        self.funcMap[EMessageCmd.delMessage.name] = lambda scode, session, jdata: self.delMessage(scode, session, jdata)
 
 
     def addMessage(self, scode, session, jdata):
         userId = session['userId']
         channelId = jdata['channelId']
-        msgId = StrUtils.getSha256Uuid('msgId:')
+        msgId = StrUtils.getMapleUuid('msgId:')
 
         if self.msgRepository.insert(scode, msgId, channelId, userId, jdata['messageType'], jdata['content']) == False:
             return self.setError(AllError.FailToSaveMessage)

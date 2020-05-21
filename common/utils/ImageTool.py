@@ -1,7 +1,7 @@
 import os, requests
 from datetime import datetime
 from PIL import Image
-from common.utils.StrUtils import StrUtils
+import common.utils.StrUtils as StrUtils
 
 class ImageTool:
     def __init__(self):

@@ -65,5 +65,5 @@ class FileRepository(MultiDbRepository):
 
 	
 	def getFileList(self, scode, boardId):
-		sql = f"SELECT * FROM uploadFile WHERE boardId='{boardId}' AND deleted=false"
+		sql = f"SELECT fileId, fileName, fileType, fileSize, comment FROM uploadFile WHERE boardId='{boardId}' AND deleted=false"
 		return self.selectQuery(scode, sql)

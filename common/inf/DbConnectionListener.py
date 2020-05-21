@@ -3,13 +3,13 @@ class DbConnectionListener(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def onDbConnected(self, status):
+    def onDbConnected(self, dbName):
         return
 
     @abc.abstractmethod
-    def onDbDisconnected(self, error):
+    def onDbDisconnected(self, dbName):
         return False
 
     @abc.abstractmethod
-    def onDbError(self, error):
+    def onDbError(self, dbName):
         return False

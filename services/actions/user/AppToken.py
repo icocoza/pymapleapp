@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
-from common.utils.CryptoHelper import CryptoHelper
+import common.utils.CryptoHelper as CryptoHelper
 from services.actions.admin.AdminToken import AdminToken
 from repository.db.admin.AdminAppRepository import AdminAppRepository
 from services.constant.AllError import AllError
-from services.constant.MapleEnum.EAdminAppStatus import EAdminAppStatus
+from services.constant.MapleEnum import EAdminAppStatus
 from module.db.MultiDbHelper import MultiDbHelper
 
 class AppToken(AdminToken):
@@ -22,6 +22,6 @@ class AppToken(AdminToken):
             #def addMySql(self, scode, host, port, user, passwd, dbname, cbAndEvt):
         if MultiDbHelper.instance().hasScode(scode) == True:
             return AllError.ok
-        if MultiDbHelper.instance().initMySql(scode, app['dbHost'], app['dbPort'], app['dbUserId'], app['dbPassword'], scode) == False:
+        if MultiDbHelper.instance().initMySqlWithDatabase(scode, app['dbHost'], app['dbPort'], app['dbUserId'], app['dbPassword'], scode) == False:
             return AllError.FailToMakePooling
         return AllError.ok
