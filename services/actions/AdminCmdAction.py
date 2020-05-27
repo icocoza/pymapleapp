@@ -74,32 +74,34 @@ class AdminCmdAction(Action):
 
     def addApp(self, jdata):
         ret = self.__checkAdminToken(jdata)
-        if ret is Action:
+        if isinstance(ret, dict):
             return ret
         token = ret
         scode = jdata['scode']
         if StrUtils.isAlphaNumeric(scode) == False:
-            return self.setError('admin', AllError.ScodeAllowedOnlyAlphabet)
-        if self.adminAppRepository.hasAdminSCode(scode) == True:
+            return self.setError('admin', AllError.ScodeAllowedOnlyAlphabet.name())
+        if self.adminAppRepository.hasSCode(scode) == True:
             return self.setError('admin', AllError.AlreadyExistScode)
 
-        appId = keygen.createKey('appId')
+        appId = keygen.createKey('appId:')
         appToken = self.adminToken.createApp(appId, scode)
 
         ret = self.__createAppDatabase(scode, jdata)
         if ret != None:
             return ret
-        MultiDbHelper.createTables(scode)
+        MultiDbHelper.instance().createTables(scode)
         #appId, userId, scode, token, title, description, status
-        if self.adminAppRepository.insertApp(appId, token['userId'], scode, appToken, jdata['title'], jdata['description'], jdata['appstatus']) == False:
+        if self.adminAppRepository.insertApp(appId, token['userId'], scode, appToken, jdata['title'], jdata['description'], jdata['status']) == False:
             return self.setError('admin', AllError.failedToCreateApp)
+        if 'dbHost' in jdata and 'dbPort' in jdata and 'dbUser' in jdata and 'dbPassword'in jdata:
+            self.adminAppRepository.updateExternalDbInfo(token['userId'], scode, jdata['dbHost'], jdata['dbPort'], jdata['dbUser'], jdata['dbPassword'])
         if 'fcmId' in jdata and 'fcmKey' in jdata:
             self.adminAppRepository.updateAdminPush(token['userId'], scode, jdata['fcmId'], jdata['fcmKey'])
         return self.setOk('admin', {'appId': appId, 'appToken': appToken})
 
     def delApp(self, jdata):
         ret = self.__checkAdminToken('admin', jdata, passwd=True)
-        if ret is Action:
+        if isinstance(ret, dict):
             return ret
         token = ret
         scode = jdata['scode']
@@ -110,8 +112,8 @@ class AdminCmdAction(Action):
         return self.setOk('admin', token['userId'])
 
     def appList(self, jdata):
-        ret = self.__checkAdminToken('admin', jdata)
-        if ret is Action:
+        ret = self.__checkAdminToken(jdata)
+        if isinstance(ret, dict):
             return ret
         token = ret
         appList = self.adminAppRepository.getAppList(token['userId'])
@@ -121,8 +123,8 @@ class AdminCmdAction(Action):
         return self.setOk('admin', {'appList': appList})
 
     def modifyApp(self, jdata):
-        ret = self.__checkAdminToken('admin', jdata, passwd=True)
-        if ret is Action:
+        ret = self.__checkAdminToken(jdata, passwd=True)
+        if isinstance(ret, dict):
             return ret
         token = ret
         scode = jdata['scode']
@@ -134,16 +136,16 @@ class AdminCmdAction(Action):
         return self.setOk('admin', jdata)
 
     def appCount(self, jdata):
-        ret = self.__checkAdminToken('admin', jdata)
-        if ret is Action:
+        ret = self.__checkAdminToken(jdata)
+        if isinstance(ret, dict):
             return ret
         token = ret
         count = self.adminAppRepository.getAppCount(token['userId'], jdata['status'])
         return self.setOk('admin', {'count': count})
 
     def updateAppStatus(self, jdata):
-        ret = self.__checkAdminToken('admin', jdata, passwd=True)
-        if ret is Action:
+        ret = self.__checkAdminToken(jdata, passwd=True)
+        if isinstance(ret, dict):
             return ret
         token = ret
         scode = jdata['scode']
@@ -162,13 +164,12 @@ class AdminCmdAction(Action):
         if self.adminTokenRepository.isAvailableToken(token['userId'], jdata['token']) == False:
             return self.setError('admin', AllError.UnauthorizedOrExpiredUser)
         if passwd:
-            user = AdminUserRepository.getUserByUserIdPassword(token['userId'], jdata['password'])
+            user = self.adminUserRepository.getUserByUserIdPassword(token['userId'], StrUtils.getSha256(jdata['password']))
             if user is None:
                 return self.setError('admin', AllError.UnauthorizedUser)
         return token
 
-    def __createAppDatabase(self, jdata):
-        scode = jdata['scode']
+    def __createAppDatabase(self, scode, jdata):
         if 'host' not in jdata or 'userId' not in jdata or 'password' not in jdata:
             if MultiDbHelper.instance().createDatabaseWithDefault(scode) == False:
                 return self.setError('admin', AllError.FailedToCreateDatabase)

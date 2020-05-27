@@ -17,6 +17,7 @@ class MultiDbManager:
         return cls._instance
 
     dbManagerMap = {}
+    
     def addMySql(self, scode, host, port, user, passwd, dbname, cbAndEvt):
         dbManager = MySqlManager()
         if dbManager.initMySqlWithDatabase(host, port, user, passwd, dbname, cbAndEvt) == True:

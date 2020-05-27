@@ -24,3 +24,57 @@ Admin
         "password": "password123"
     }
 }
+
+{
+    "version": "v0.1",
+    "stype": "maple",
+    "scode": "admin",
+    "data": {
+        "cmd": "adminAddApp",
+        "token": "3234232324324sdf23ff",
+        "scode": "serviceA",
+        "title": "this is title",
+        "description": "it’s app.",
+        "status": "ready"
+        "fcmId": "google push id", #Optional
+        "fcmKey": "google push key" #Optional
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",    # default is ‘maple'
+    "scode": "admin",
+    "data": {
+        "cmd": "adminAppList",
+        "token": "3234232324324sdf23ff",
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",    # default is ‘maple'
+    "scode": "admin",
+    "data": {
+        "cmd": "adminModifyApp",
+        "token": "3234232324324sdf23ff",
+        "scode": "serviceA",
+        "password": "password123"
+        "title": "this is title",
+        "description": "it’s app.",
+        "status": "ready, block, delete, stop, pending, all" #all only search.. not use in here
+        "fcmId": "google push id", #Optional
+        "fcmKey": "google push key" #Optional
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",    # default is ‘maple'
+    "scode": "admin",
+    "data": {
+        "cmd": "adminAppCount",
+        "status": "all",
+    }
+}
+

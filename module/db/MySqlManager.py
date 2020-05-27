@@ -2,6 +2,7 @@
 import mysql.connector as mysqlconn
 import mysql.connector.pooling
 import logging
+import common.utils.StrUtils as StrUtils
 
 import common.utils.ExceptionUtil as exutil
 
@@ -94,23 +95,39 @@ class MySqlManager:
                 cursor.close()
                 conn.close()
 
-    def insertOne(self, query):
+    def execute(self, query, params):
         try:
             conn = self.pool.get_connection()
             cursor = conn.cursor()
-            cursor.execute(query)
+            cursor.execute(query, params)
             conn.commit()
             return True
         except Exception as ex:
             exutil.printException()
             self.cbAndEvt.onDbError.fire(str(ex))
-            #if(self.cbAndEvt != None):
-            #    self.cbAndEvt.on_disconnected("disconnected")
             return False
         finally:
             if conn.is_connected() == True :
                 cursor.close()
-                conn.close()
+                conn.close()       
+
+    # def insertOne(self, query):
+    #     try:
+    #         conn = self.pool.get_connection()
+    #         cursor = conn.cursor()
+    #         cursor.execute(query)
+    #         conn.commit()
+    #         return True
+    #     except Exception as ex:
+    #         exutil.printException()
+    #         self.cbAndEvt.onDbError.fire(str(ex))
+    #         #if(self.cbAndEvt != None):
+    #         #    self.cbAndEvt.on_disconnected("disconnected")
+    #         return False
+    #     finally:
+    #         if conn.is_connected() == True :
+    #             cursor.close()
+    #             conn.close()
 
     def multiQueries(self, queries):
         try:

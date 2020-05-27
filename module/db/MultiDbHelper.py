@@ -35,8 +35,14 @@ class MultiDbHelper(DbConnectionListener):
     def hasScode(self, scode):
         return MultiDbManager.instance().hasScode(scode)
 
+    def createDatabaseWithDefault(self, scode):
+        return self.createDatabase(scode, appconfig.dbhost, appconfig.dbport, appconfig.dbuser, appconfig.dbpassword)
+
+    def createDatabase(self, scode, host, port, user, passwd):
+        return self.databaseMaker.createDatabase(scode, host, port, user, passwd)
+
     def initMysqlWithDefault(self, scode):
-        return self.initMySqlWithDatabase(scode, appconfig.dbhost, appconfig.dbport, appconfig.dbuser, appconfig.dbpassword, appconfig.dbname, self)
+        return self.initMySqlWithDatabase(scode, appconfig.dbhost, appconfig.dbport, appconfig.dbuser, appconfig.dbpassword, scode)
 
     def initMySqlWithDatabase(self, scode, host, port, user, passwd, dbname):
         return MultiDbManager.instance().addMySql(scode, host, port, user, passwd, dbname, self)
@@ -48,12 +54,6 @@ class MultiDbHelper(DbConnectionListener):
         self.initMysqlWithDefault(scode, self)
         time.sleep(3)
         self.closeMySql(scode)
-
-    def createDatabaseWithDefault(self, scode):
-        return self.createDatabase(scode, appconfig.dbhost, appconfig.dbport, appconfig.dbuser, appconfig.dbpassword)
-
-    def createDatabase(self, scode, host, port, user, passwd):
-        return self.databaseMaker.createDatabase(scode, host, port, user, passwd)
 
     def createTables(self, scode):
         for table in self.databaseMaker.tableQueries:
@@ -73,38 +73,38 @@ class MultiDbHelper(DbConnectionListener):
         pass
 
 
-    class DatabaseMaker:
+class DatabaseMaker:
 
-        def __init__(self):
-            self.__loadAppTableInfo()
-            pass
+    def __init__(self):
+        self.__loadAppTableInfo()
+        pass
 
-        def createDatabase(self, scode, host, port, user, passwd):  #scode means database name
-            try:
-                logging.info("{0}:{1} {2}, DB Name: {3}".format(host, port, user, scode))
-                dbconfig = {
-                    "user": user,
-                    "password": passwd,
-                    "host": host,
-                    "port": port,
-                    "connect_timeout": 3000
-                }            
-                pool = mysqlconn.pooling.MySQLConnectionPool(pool_size=2, pool_name='DBMAKER_POOL', **dbconfig)
-                sql = f"CREATE DATABASE {scode} IF NOT EXIST"
-                conn = pool.get_connection()
-                cursor = conn.cursor()
-                cursor.execute(sql)
-                conn.commit()
-                return True
-            except Exception as ex:
-                exutil.printException()
-                return False
+    def createDatabase(self, scode, host, port, user, passwd):  #scode means database name
+        try:
+            logging.info("{0}:{1} {2}, DB Name: {3}".format(host, port, user, scode))
+            dbconfig = {
+                "user": user,
+                "password": passwd,
+                "host": host,
+                "port": port,
+                "connect_timeout": 3000
+            }            
+            pool = mysqlconn.pooling.MySQLConnectionPool(pool_size=2, pool_name='DBMAKER_POOL', **dbconfig)
+            sql = f"CREATE DATABASE IF NOT EXISTS {scode} "
+            conn = pool.get_connection()
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            conn.commit()
+            pool._remove_connections()
+            return True
+        except Exception as ex:
+            exutil.printException()
+            return False
 
-        def __loadAppTableInfo(self):
-            sqlFile = os.getcwd() + "/resources/sql/app.sql"
-            file = open(sqlFile,mode='r')
-            filetext = file.read()
-            file.close()
-            self.tableQueries = filetext.split("\n\n", -1)
-            pass
- 
+    def __loadAppTableInfo(self):
+        sqlFile = os.getcwd() + "/resources/sql/app.sql"
+        file = open(sqlFile,mode='r')
+        filetext = file.read()
+        file.close()
+        self.tableQueries = filetext.split("\n\n", -1)
+        pass

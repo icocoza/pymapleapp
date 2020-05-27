@@ -8,9 +8,10 @@ from repository.db.DbRepository import DbRepository
 class AdminAppRepository(DbRepository):
     
     def insertApp(self, appId, userId, scode, token, title, description, status):
+        params = (appId, userId, scode, title, token, description, status)
         sql = f"INSERT INTO adminApp (appId, userId, scode, title, token, description, status) \
-                VALUES('{appId}', '{userId}', '{scode}', '{title}', '{token}', '{description}', '{status}')"
-        return self.insertQuery(sql)
+                VALUES(%s, %s, %s, %s, %s, %s, %s)"
+        return self.execute(sql, params)
 
     def getAppByAppId(self, appId):
         sql = f"SELECT * FROM adminApp WHERE appId='{appId}'"
@@ -29,20 +30,22 @@ class AdminAppRepository(DbRepository):
         return self.selectQuery(sql)    
 
     def updateApp(self, userId, scode, title, description, status):
-        sql = f"UPDATE adminApp SET title='{title}', description='{description}', status='{status}', statusAt=now() \
-                WHERE userId='{userId}' AND scode='{scode}'"
-        return self.updateQuery(sql)
+        params = (title, description, status, userId, scode)
+        sql = f"UPDATE adminApp SET title=%s, description=%s, status=%s, statusAt=now() \
+                WHERE userId=%s AND scode=%s"
+        return self.execute(sql, params)
 
     def updatePushInfo(self, userId, scode, fcmId, fcmKey):
-        sql = f"UPDATE adminApp SET fcmId='{fcmId}', fcmKey='{fcmKey}', statusAt=now() WHERE userId='{userId}' AND scode='{scode}'"
-        return self.updateQuery(sql)
+        params = (fcmId, fcmKey, userId, scode)
+        sql = f"UPDATE adminApp SET fcmId=%s, fcmKey=%s, statusAt=now() WHERE userId=%s AND scode=%s"
+        return self.execute(sql, params)
 
     def updateStatus(self, userId, scode, status):
         sql = f"UPDATE adminApp SET status='{status}', statusAt=now() WHERE userId='{userId}' AND scode='{scode}'"
         return self.updateQuery(sql)
 
-    def updateExternalDbInfo(self, userId, scode, dbHost, dbPort, dbOptions, dbUserId, dbPassword):
-        sql = f"UPDATE adminApp SET dbHost='{dbHost}', dbPort='{dbPort}', dbOptions='{dbOptions}', dbUserId='{dbUserId}', dbPassword='{dbPassword}' \
+    def updateExternalDbInfo(self, userId, scode, dbHost, dbPort, dbUser, dbPassword):
+        sql = f"UPDATE adminApp SET dbHost='{dbHost}', dbPort='{dbPort}', dbUser='{dbUser}', dbPassword='{dbPassword}' \
                 WHERE userId='{userId}' AND scode='{scode}'"
         return self.updateQuery(sql)
 
@@ -65,5 +68,5 @@ class AdminAppRepository(DbRepository):
 
     def hasSCode(self, scode):
         sql = f"SELECT * FROM adminApp WHERE scode='{scode}'"
-        return len(self._selectToJson(self.selectQuery(sql))) > 0
+        return self.selectQuery(sql) is not None
 

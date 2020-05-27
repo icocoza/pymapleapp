@@ -1,7 +1,8 @@
 import hashlib, uuid
+import time
 
 def createKey(prefix):
-    return prefix + uuid.uuid1().hex().replace('-', '')
+    return prefix + str(uuid.uuid1()).replace('-', '') + str(int(round(time.time() * 1000)))
 
 def createUuid():
-    return uuid.uuid1().hex().replace('-', '')
+    return str(uuid.uuid1()).replace('-', '')

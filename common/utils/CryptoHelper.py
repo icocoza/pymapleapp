@@ -16,15 +16,17 @@ def encrypt(plainText):
     private_key = hashlib.sha256(PASSWORD.encode("utf-8")).digest()
     plainText = pad(plainText)
     iv = Random.new().read(AES.block_size)
+
     cipher = AES.new(private_key, AES.MODE_CBC, iv)
-    #return base64.b64encode(iv + cipher.encrypt(raw))
     return base62.encodebytes(iv + cipher.encrypt(plainText))
 
 
 def decrypt(cipherText):
     private_key = hashlib.sha256(PASSWORD.encode("utf-8")).digest()
-    #enc = base64.b64decode(enc)
-    enc = base62.decodebytes(cipherText)
+    cipherText = base62.decodebytes(cipherText)
     iv = cipherText[:16]
+    cipherText = cipherText[16:]
+
     cipher = AES.new(private_key, AES.MODE_CBC, iv)
-    return unpad(cipher.decrypt(cipherText[16:]))
+    p = unpad(cipher.decrypt(cipherText))
+    return p.decode("utf-8") 

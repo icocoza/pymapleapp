@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS  `board` (
   KEY `idx_createdAt` (`createdAt`),
   KEY `idx_userName` (`userName`),
   KEY `idx_contentType` (`contentType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `boardContent` (
   `boardId` varchar(64) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS  `boardContent` (
   `content` varchar(2048) NOT NULL,
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`boardId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `boardCount` (
   `boardId` varchar(64) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS  `boardCount` (
   `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`boardId`),
   KEY `likes` (`likes`,`dislikes`,`visit`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `boardReply` (
   `replyId` varchar(64) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS  `boardReply` (
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`replyId`),
   KEY `boardId` (`boardId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `boardScrap` (
   `scrapId` varchar(64) NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS  `boardScrap` (
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`scrapId`),
   KEY `idx_boardId` (`boardId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `boardVoter` (
   `boardId` varchar(64) NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS  `boardVoter` (
   `score` int(11) DEFAULT '0',
   `votedAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`boardId`,`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `chatChannel` (
   `channelId` varchar(64) NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS  `chatChannel` (
   `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`channelId`),
   KEY `INDEX` (`userId`,`modifiedAt`,`channelId`,`createdAt`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `chatDelMessage` (
   `channelId` varchar(64) NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS  `chatDelMessage` (
   `deletedAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`userId`,`messageId`),
   KEY `channelId` (`channelId`,`deletedAt`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `chatMessage` (
   `messageId` varchar(64) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS  `chatMessage` (
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`messageId`),
   KEY `channelId` (`channelId`,`senderId`,`createdAt`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `chatMyChannel` (
   `userId` varchar(64) NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS  `chatMyChannel` (
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
   `modifiedAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`userId`,`channelId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `chatReadMessage` (
   `channelId` varchar(64) NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS  `chatReadMessage` (
   `readAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`userId`,`messageId`),
   KEY `channelId` (`channelId`,`userId`,`messageId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `friend` (
   `userId` varchar(64) NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS  `friend` (
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`userId`,`friendId`),
   KEY `userId` (`userId`,`friendId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `scrap` (
   `scrapId` varchar(64) NOT NULL,
@@ -141,13 +141,13 @@ CREATE TABLE IF NOT EXISTS  `scrap` (
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`scrapId`),
   KEY `idx_url` (`url`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `scrapBody` (
   `scrapId` varchar(64) NOT NULL,
   `body` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`scrapId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `uploadFile` (
   `fildId` varchar(64) NOT NULL,
@@ -200,9 +200,8 @@ CREATE TABLE IF NOT EXISTS  `userAuth` (
   `leftAt` datetime DEFAULT NULL,
   `authType` varchar(12) NOT NULL,
   PRIMARY KEY (`userId`),
-  KEY `idx_uid` (`uid`),
   KEY `idx_email` (`email`),
-  KEY `idx_phone` (`phone`)
+  KEY `idx_phone` (`mobileNo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `userPush` (
@@ -235,7 +234,7 @@ CREATE TABLE IF NOT EXISTS  `vote` (
   `closed` tinyint(1) DEFAULT '0',
   `expiredAt` datetime DEFAULT NULL,
   PRIMARY KEY (`boardId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `voteItem` (
   `voteItemId` varchar(64) NOT NULL,
@@ -244,7 +243,7 @@ CREATE TABLE IF NOT EXISTS  `voteItem` (
   `selectCount` int(11) DEFAULT '0',
   PRIMARY KEY (`voteItemId`),
   KEY `boardId` (`boardId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `voteUser` (
   `boardId` varchar(64) NOT NULL,
@@ -252,4 +251,4 @@ CREATE TABLE IF NOT EXISTS  `voteUser` (
   `voteItemId` varchar(64) NOT NULL,
   `votedAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`boardId`,`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -45,3 +45,6 @@ class DbRepository:
 
     def insert(self, sql):
         return MySqlManager.instance().insertOne(sql)
+
+    def execute(self, sql, params):
+        return MySqlManager.instance().execute(sql, params)

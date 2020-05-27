@@ -16,7 +16,7 @@ PHONE_PATTERN = "^\\(?(\\d{3})\\)?[- ]?(\\d{3,4})[- ]?(\\d{4})$"
 def isPhone(data):
     return __isPattern(PHONE_PATTERN, data)
 
-ALPHA_NUMERIC_PATTERN = "((?<=[a-zA-Z])(?=[0-9]))|((?<=[0-9])(?=[a-zA-Z]))"
+ALPHA_NUMERIC_PATTERN = "^[a-zA-Z0-9_]+$"
 def isAlphaNumeric(data):
     return __isPattern(ALPHA_NUMERIC_PATTERN, data)
 
@@ -47,6 +47,9 @@ def isFilename(data):
 def extractUrls(text):
     return re.findall(r'(https?://\S+)', text)
 
+def escapeString(text):
+    return re.escape(text)
+    
 def getMapleUuid(prefix):
     return prefix + hashlib.sha1(str(uuid.uuid1()).encode()).hexdigest() + str(int(round(time.time() * 1000)))
 

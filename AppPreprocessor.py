@@ -74,9 +74,18 @@ class AppPreprocessor(DbConnectionListener):
             worker = self.workerFactory.createFactory(jdata['stype'])
             result = worker.workJson(jdata)
             result['sessionId'] = jdata['sessionId']
-            RedisManager.instance().lpush(REDIS_QUEUE_DATA_SERVER+jdata['server'], str(result))
+            jstr = json.dumps(result, default=self.outputDateTimeJSON) 
+            RedisManager.instance().lpush(REDIS_QUEUE_DATA_SERVER+jdata['server'], jstr)
         else:
             logging.error(f'Unknown Servie Type {jdata}')
+
+    def outputDateTimeJSON(self, obj):
+        if isinstance(obj, datetime):
+            if obj.utcoffset() is not None:
+                obj = obj - obj.utcoffset()
+
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        return str(obj)
 
     def threadRedisQueueFunc(self): #Read Redis Queue
         queueCheckPointAt = datetime.now()
