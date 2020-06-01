@@ -12,7 +12,7 @@ import common.const.unit_constant as unitConst
 from module.db.MySqlManager import MySqlManager
 from module.db.DbHelper import DbHelper
 from module.redis.RedisManager import RedisManager
-
+from services.actions.Action import Action
 from services.worker.WorkerFactory import WorkerFactory
 
 import common.utils.ExceptionUtil as exutil
@@ -23,13 +23,14 @@ REDIS_QUEUE_DATA_SERVER = 'maple.collector.server:'
 class AppPreprocessor(DbConnectionListener):
     
     def __init__(self, serviceType, buildType):
+        logging.info('buildType: '+buildType)
         self.threading = True
 
         self.workerFactory = WorkerFactory()
-        if buildType!='dev':
-            RedisManager.instance().initRedisSentinel(appconfig.redis_host_port, appconfig.redis_master, appconfig.redis_password)
-        else:
-            RedisManager.instance().initRedisSingle('127.0.0.1', 6379)
+        #if buildType!='dev':
+        RedisManager.instance().initRedisSentinel(appconfig.redis_host_port, appconfig.redis_master, appconfig.redis_password)
+        #else:
+        #    RedisManager.instance().initRedisSingle('127.0.0.1', 6379)
 
         self.onEventDbConnect = EventHook()
         self.onEventDbConnect += self.onDbConnected
@@ -44,13 +45,13 @@ class AppPreprocessor(DbConnectionListener):
         pass
     
     def onDbConnected(self, dbName):
-        if dbName is 'admin':
+        logging.info('Connected: ' + dbName)
+        if dbName is 'init':
             self.__initializeAdminDatabase()
-        logging.info(dbName)
 
     def onDbDisconnected(self, dbName):
         logging.info('Disconnected: ' + dbName)
-        if dbName != 'admin':
+        if dbName != 'init':
             time.sleep(3)
             self.dbHelper.initMysqlWithDefault(self)
     
@@ -66,13 +67,19 @@ class AppPreprocessor(DbConnectionListener):
         self.threading = False
 
     def onRedisQueueData(self, data):
+        logging.info(f'onRedisQueueData:\n{data}')
         jdata = json.loads(data)
         if 'server' not in jdata or 'sessionId' not in jdata:
             logging.error('Invalid Packet\n' + data)
             return
+        result = None
         if 'stype' in jdata:
             worker = self.workerFactory.createFactory(jdata['stype'])
-            result = worker.workJson(jdata)
+            if worker is None:
+                result = Action().setOk('unknown', 'Not Implemented Stype')
+            else:
+                result = worker.workJson(jdata)
+            logging.info(f'Result: {result}')
             result['sessionId'] = jdata['sessionId']
             jstr = json.dumps(result, default=self.outputDateTimeJSON) 
             RedisManager.instance().lpush(REDIS_QUEUE_DATA_SERVER+jdata['server'], jstr)
@@ -97,9 +104,9 @@ class AppPreprocessor(DbConnectionListener):
 
                 data = RedisManager.instance().brPop(REDIS_QUEUE_DATA)
                 if data == None:
-                    time.sleep(3)
                     continue
                 data = data[1].decode('utf-8')
+                logging.info(data)
                 self.onRedisQueueData(data)
             except Exception as ex:
                 exutil.printException()

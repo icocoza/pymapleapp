@@ -38,16 +38,16 @@ class MySqlManager:
             self.user = user
             self.passwd = passwd
             self.cbAndEvt = cbAndEvt
-            self.dbname = 'admin'
-            logging.info("{0}:{1} {2}, DB Name: 'admin'".format(host, port, user))
+            self.dbname = 'init'
+            logging.info("{0}:{1} {2}, DB Name: 'None'".format(host, port, user))
             dbconfig = self.__getDefaultConfig(host, port, user, passwd)    
      
             self.pool = mysqlconn.pooling.MySQLConnectionPool(pool_size=poolCount, pool_name=self.DB_POOLNAME, **dbconfig)
-            self.cbAndEvt.onEventDbConnect.fire('admin')
+            self.cbAndEvt.onEventDbConnect.fire('init')
             return True
         except Exception as ex:
             exutil.printException()
-            self.cbAndEvt.onEventDbDisconnect.fire('admin')
+            self.cbAndEvt.onEventDbDisconnect.fire('init')
             return False
 
     def initMySqlWithDatabase(self, host, port, user, passwd, dbname, cbAndEvt, poolCount=4):
@@ -72,7 +72,7 @@ class MySqlManager:
     def closeMySql(self):
         try:
             self.pool._remove_connections()
-            self.cbAndEvt.onEventDbConnect.fire(self.dbname)
+            self.cbAndEvt.onEventDbDisconnect.fire(self.dbname)
         except Exception as ex:
             exutil.printException()
 
@@ -111,24 +111,6 @@ class MySqlManager:
                 cursor.close()
                 conn.close()       
 
-    # def insertOne(self, query):
-    #     try:
-    #         conn = self.pool.get_connection()
-    #         cursor = conn.cursor()
-    #         cursor.execute(query)
-    #         conn.commit()
-    #         return True
-    #     except Exception as ex:
-    #         exutil.printException()
-    #         self.cbAndEvt.onDbError.fire(str(ex))
-    #         #if(self.cbAndEvt != None):
-    #         #    self.cbAndEvt.on_disconnected("disconnected")
-    #         return False
-    #     finally:
-    #         if conn.is_connected() == True :
-    #             cursor.close()
-    #             conn.close()
-
     def multiQueries(self, queries):
         try:
             conn = self.pool.get_connection()
@@ -151,7 +133,7 @@ class MySqlManager:
         self.multiQueries(queries)
         
     def updateOne(self, query):
-        return self.insertOne(query)
+        return self.nonSelect(query)
     
     def nonSelect(self, query):
         try:

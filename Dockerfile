@@ -3,7 +3,7 @@ FROM centos:7
 RUN yum update -y
 RUN yum -y install yum-utils
 RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-RUN yum -y install mysql python36u python36u-devel python36u-pip convmv
+RUN yum -y install gcc gcc-c++ mysql python36u python36u-devel python36u-pip convmv
 RUN easy_install-3.6 pip
 RUN pip3 -V
 RUN pip3 install --upgrade setuptools
@@ -20,25 +20,20 @@ RUN pip3 install \
     python-dateutil \
     pytz \
     SQLAlchemy \
-    keras \
     pymysql \
     flask_restplus \
     confluent_kafka \
     flask \
     sqlalchemy \
     redis \
-    sklearn \
     apscheduler \
     Crypto \
     pybase62 \
     beautifulsoup4 \
     tqdm \
     pillow \
-    pycryptodome \
-    pycryptodomex \
+    pycrypto \
     enum34
-
-RUN pip3 install tensorflow==1.14.0
 
 RUN localedef -f UTF-8 -i ko_KR ko_KR.utf8
 RUN export LANG=ko_KR.utf8

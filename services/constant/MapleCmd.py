@@ -1,6 +1,7 @@
 from enum import Enum
 
 class EAdminCmd(Enum):
+    adminAdminRegister = "adminAdminRegister"
     adminRegister = "adminRegister"
     adminLogin = "adminLogin"
     adminLogout = "adminLogout"
@@ -11,7 +12,8 @@ class EAdminCmd(Enum):
     adminAppCount = "adminAppCount"
     adminStopApp = "adminStopApp"
     adminRunApp = "adminRunApp"
-    adminReadyApp = "adminReadyApp"     
+    adminReadyApp = "adminReadyApp"
+    adminUserList = "adminUserList"
 
 class EBoardCmd(Enum):
     addBoard = "addBoard"

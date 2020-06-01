@@ -10,6 +10,8 @@ from services.actions.UserCmdAction import UserCmdAction
 
 from services.actions.user.SigninToken import SigninToken
 
+import logging
+
 class MapleWorker:
 
     def __init__(self):

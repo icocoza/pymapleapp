@@ -1,9 +1,9 @@
-CREATE TABLE IF NOT EXISTS `admin`.`adminUser` (
+CREATE TABLE `adminUser` (
   `userId` varchar(64) NOT NULL,
   `email` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
   `adminStatus` enum('none','normal','pending','block','leave') DEFAULT 'pending',
-  `userRole` enum('none','user','adminUser','adminMaster','anonymous') DEFAULT NULL,
+  `userRole` enum('none','user','admin') NOT NULL DEFAULT 'user',
   `userName` varchar(64) DEFAULT NULL,
   `nationality` varchar(8) DEFAULT NULL,
   `lastPassword` varchar(64) DEFAULT NULL,

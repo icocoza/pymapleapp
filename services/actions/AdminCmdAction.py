@@ -12,6 +12,8 @@ from repository.db.admin.AdminAppRepository import AdminAppRepository
 from module.db.MultiDbHelper import MultiDbHelper
 import common.utils.keygen as keygen
 
+import logging
+
 class AdminCmdAction(Action):
     def __init__(self):
         super().__init__()
@@ -22,6 +24,7 @@ class AdminCmdAction(Action):
         self.adminAppRepository = AdminAppRepository()
 
         self.funcMap = {}
+        self.funcMap[EAdminCmd.adminAdminRegister.name] = lambda jdata: self.adminRegister(jdata)
         self.funcMap[EAdminCmd.adminRegister.name] = lambda jdata: self.adminRegister(jdata)
         self.funcMap[EAdminCmd.adminLogin.name] = lambda jdata: self.adminLogin(jdata)
         self.funcMap[EAdminCmd.adminLogout.name] = lambda jdata: self.adminLogout(jdata)
@@ -35,7 +38,17 @@ class AdminCmdAction(Action):
         self.funcMap[EAdminCmd.adminReadyApp.name] = lambda jdata: self.updateAppStatus(jdata)
         self.funcMap[EAdminCmd.adminRunApp.name] = lambda jdata: self.updateAppStatus(jdata)
 
+        self.funcMap[EAdminCmd.adminUserList.name] = lambda jdata: self.adminUserList(jdata)
+
+    def adminAdminRegister(self, jdata):
+        jdata['role'] = 'admin'
+        return self.__userRegister(jdata)
+    
     def adminRegister(self, jdata):
+        jdata['role'] = 'user'
+        return self.__userRegister(jdata)
+
+    def __userRegister(self, jdata):
         if StrUtils.isEmail(jdata['email']) == False:
             return self.setError('admin', AllError.InvalidEmailFormat)
         if self.adminUserRepository.getUserByEmail(jdata['email']) is not None:
@@ -44,7 +57,7 @@ class AdminCmdAction(Action):
             return self.setError('admin', AllError.ShortPasswordLengthThan8)
 
         userId = StrUtils.getMapleUuid('adminId:')
-        if self.adminUserRepository.insert(userId, jdata['email'], StrUtils.getSha256(jdata['password']), 'user', jdata['userName']) == False:
+        if self.adminUserRepository.insert(userId, jdata['email'], StrUtils.getSha256(jdata['password']), jdata['role'], jdata['userName']) == False:
             return self.setError('admin', AllError.RegisterFailed)
         return self.setOk('admin', userId)
 
@@ -54,7 +67,6 @@ class AdminCmdAction(Action):
             return self.setError('admin', AllError.NotExistUser)
         if StrUtils.getSha256(jdata['password']) != user['password']:
             return self.setError('admin', AllError.WrongAccountInfo)
-        
         token = self.adminToken.createUser(user['userId'], user['userRole'], user['userName'])
         self.adminTokenRepository.upsert(user['userId'], token, '0.0.0.0')
         return self.setOk('admin', {'userId': user['userId'], 'token': token})
@@ -117,7 +129,7 @@ class AdminCmdAction(Action):
             return ret
         token = ret
         appList = self.adminAppRepository.getAppList(token['userId'])
-        if len(appList) < 1:
+        if appList is None:
             return self.setError('admin', AllError.NoListData)
 
         return self.setOk('admin', {'appList': appList})
@@ -152,6 +164,19 @@ class AdminCmdAction(Action):
         if self.adminAppRepository.updateStatus(token['userId'], scode, jdata['status']) == False:
             return self.setError('admin', AllError.FailedToUpdateApp)
         return self.setOk('admin', scode)
+
+    def adminUserList(self, jdata):
+        ret = self.__checkAdminToken(jdata)
+        if isinstance(ret, dict):
+            return ret
+        token = ret
+        if 'role' not in token or token['role'] != 'admin':
+            return self.setError('admin', 'No Permission User')
+        userList = self.adminUserRepository.getUserList()
+        if userList is None:
+            return self.setError('admin', AllError.NoListData)
+
+        return self.setOk('admin', {'userList': userList})
 
     def __checkAdminToken(self, jdata, passwd=False):
         if 'token' not in jdata:

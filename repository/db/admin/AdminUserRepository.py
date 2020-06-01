@@ -24,6 +24,10 @@ class AdminUserRepository(DbRepository):
         sql = f"SELECT * FROM adminUser WHERE userId='{userId}' AND password='{password}'"
         return self.selectOne(sql)
 
+    def getUserList(self):
+        sql = f"SELECT userId, email, userRole, userName FROM adminUser"
+        return self.select(sql)
+
     def updateLastVisit(self, userId):
         sql = f"UPDATE adminUser SET lastAt=now() WHERE userId='{userId}'"
         return self.updateQuery(sql)
