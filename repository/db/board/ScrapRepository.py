@@ -10,26 +10,25 @@ class ScrapRepository(MultiDbRepository):
 
 	def insert(self, scode, scrapId, url, title, subTitle):
 		sql = qInsertScrap(scrapId, url, title, subTitle)
-		return self.insertQuery(scode, sql)
+		return super().insertQuery(scode, sql)
 
 	def qInsertScrap(self, scode, scrapId, url, title, subTitle):
 		return f"INSERT INTO scrap (scrapId, url, title, subTitle) VALUES('{scrapId}', '{url}', '{title}', '{subTitle}')"
 	
 	def getScrap(self, scode, scrapId):
 		sql = f"SELECT * FROM scrap WHERE scrapId='{scrapId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 
 	def getScrapList(self, scode, scrapIds):
 		ids = ','.join(["'" + str(id)+"'" for id in scrapIds])
 		sql = f"SELECT * FROM scrap WHERE scrapId IN ({ids})"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 
-	def getScrapListByUrl(self, scode, urls):
-		urllist = ','.join(["'" + str(id)+"'" for id in urls])
-		sql = f"SELECT * FROM scrap WHERE url IN ({urllist})"
-		return self.selectQuery(scode, sql)
+	def getScrapListByUrl(self, scode, url):
+		sql = f"SELECT * FROM scrap WHERE url = '{url}'"
+		return super().selectQuery(scode, sql)
 	
 	def updateScrapFile(self, scode, scrapId, fileName):
 		sql = f"UPDATE scrap SET fileName='{fileName}' WHERE scrapId='{scrapId}'"
-		return self.updateQuery(scode, sql)
+		return super().updateQuery(scode, sql)
 

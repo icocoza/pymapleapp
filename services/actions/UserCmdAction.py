@@ -41,29 +41,33 @@ class UserCmdAction(Action):
     def __registerUser(self, scode, authType, jdata, enableToken):
         userId = jdata['userId'] if 'userId' in jdata else StrUtils.getMapleUuid('userId:') #for anonymous user
 
-        authSwitcher = {
-            EUserAuthType.idpw: self.userAuthRepository.qInsertUserNamePw(scode, userId, jdata['userName'], StrUtils.getSha256(jdata['password'])),
-            EUserAuthType.email: self.userAuthRepository.qInsertEmail(scode, userId, jdata['email']),       # email은 암호화 해야 함
-            EUserAuthType.mobile: self.userAuthRepository.qInsertPhoneNo(scode, userId, jdata['mobileNo']) # mobileNo는 암호화 해야 함
-        }
-
-        authQuery = authSwitcher.get(authType, None)
+        authQuery = None
+        if authType == EUserAuthType.idpw:
+            authQuery = self.userAuthRepository.qInsertUserNamePw(scode, userId, jdata['userName'], jdata['password'])
+        elif authType == EUserAuthType.email:
+            authQuery = self.userAuthRepository.qInsertEmail(scode, userId, jdata['email'])
+        elif  authType == EUserAuthType.mobile:
+            self.userAuthRepository.qInsertPhoneNo(scode, userId, jdata['mobileNo'])
+        if authQuery == None:
+            return self.setError(scode, AllError.UnknownAuthType)
         tokenId, token = self.loginToken.create(scode, userId, jdata['uuid'], authType)
         queries = []
         if authQuery is not None:
             queries.append(authQuery)
         if 'userName' not in jdata:
             jdata['userName'] = 'No.' + str(int(round(time.time() * 1000)))
+
         queries.append(self.userRepository.qInsert(scode, userId, jdata['userName'], authQuery==None))
+        
         queries.append(self.userTokenRepository.qInsertToken(scode, userId, jdata['uuid'], tokenId, token, enableToken))
         if self.userRepository.multiQueries(scode, queries) == False:
             return self.setError(scode, AllError.FailedUserRegister)
         return self.setOk(scode, {'loginToken': token})
-
+    
     def registerIdPw(self, scode, jdata):
-        if len(jdata['userName'] < 6):
+        if len(jdata['userName']) < 6:
             return self.setError(scode, AllError.userIdMoreThan6Characters)
-        if len(jdata['password'] < 8):
+        if len(jdata['password']) < 8:
             return self.setError(scode, AllError.passwordMoreThan8Characters)
         if 'appToken' not in jdata or len(jdata['appToken']) < 1:
             return self.setError(scode, AllError.appTokenNotExist)
@@ -101,15 +105,12 @@ class UserCmdAction(Action):
 
     def userLogin(self, scode, jdata):
         appId, scode = self.appToken.parseApp(jdata['appToken'])
-        err = self.appToken.checkScode(scode)
-        if err != AllError.ok:
-            return self.setError(scode, err)
 
         auth = self.userAuthRepository.getUserByUserName(scode, jdata['userName'])
         if auth == None:
             return self.setError(scode, AllError.NotExistUserAuth)
 
-        if auth['authType'] == EUserAuthType.idpw.name() and auth['password'] != StrUtils.getSha256(jdata['password']):
+        if EUserAuthType(auth['authType']) == EUserAuthType.idpw and auth['password'] != StrUtils.getSha256(jdata['password']):
             return self.setError(scode, AllError.InvalidUser)
         
         userId = auth['userId']
@@ -121,7 +122,7 @@ class UserCmdAction(Action):
         tokenId, token = self.loginToken.create(scode, userId, uuid, auth['authType'])  #로그인하면 로그인토큰을 매번 갱신한다.
         result = False
         if tokenRec['uuid'] == uuid:
-            result = self.userTokenRepository.updateToken(scode, userId, tokenId, token, True)
+            result = self.userTokenRepository.updateToken(scode, userId, uuid, tokenId, token, True)
         else:
             queries = []
             queries.append(self.userTokenRepository.qDeleteTokenByUuid(scode, userId, uuid))
@@ -139,9 +140,6 @@ class UserCmdAction(Action):
 
     def anonymousLogin(self, scode, jdata):
         appId, scode = self.appToken.parseApp(jdata['appToken'])
-        err = self.appToken.checkScode(scode)
-        if err != AllError.ok:
-            return self.setError(scode, err)
 
         if self.userRepository.findUserName(scode, jdata['userName']) == True:
             return self.setError(scode, AllError.ExistUserName)
@@ -178,7 +176,7 @@ class UserCmdAction(Action):
 
         userId = token['userId']
         tokenRec = self.userTokenRepository.getToken(token['scode'], userId, token['uuid'])
-        if tokenRec == None:
+        if tokenRec == None or jdata['loginToken'] != tokenRec['token']:
             return self.setError(scode, AllError.ExpiredOrDifferentLoginToken)
         
         authRec = self.userAuthRepository.getUser(token['scode'], userId)
@@ -188,7 +186,7 @@ class UserCmdAction(Action):
         if userRec == None:
             return self.setError(scode, AllError.MightBeLeftUser)
 
-        signinTokenId, signinToken = self.signinToken.create(scode, userId, token['uuid'], tokenRec['tokenId'])
+        signinTokenId, signinToken = self.signinToken.create(scode, userId, authRec['userName'], token['uuid'], tokenRec['tokenId'])
         self.userRepository.updateLastVisit(scode, userId)
 
         return self.setOk(scode, {'signinToken': signinToken, 'lastAt': userRec['lastAt'], 'userName': userRec['userName']})
@@ -198,37 +196,37 @@ class UserCmdAction(Action):
         if token is None or token['scode'] != scode:
             return self.setError(scode, AllError.InvalidSigninToken)
 
-        if self.signinToken.isExpiredSigninToken(token['startAt']):
-            return self.setError(AllError.ExpiredSigninToken)
+        if self.signinToken.isExpired(token['startAt']):
+            return self.setError(scode, AllError.ExpiredSigninToken)
         if 'password' not in jdata:
-            return self.setError(AllError.EmptyOldPassword)
+            return self.setError(scode, AllError.EmptyOldPassword)
         if len(jdata['newpw'])<8:
-            return self.setError(AllError.passwordMoreThan8Characters)
+            return self.setError(scode, AllError.passwordMoreThan8Characters)
 
         oldPasswd = hashlib.sha256(jdata['password'].encode()).hexdigest()
         newPasswd = hashlib.sha256(jdata['newpw'].encode()).hexdigest()
 
         authRec = self.userAuthRepository.getUser(scode, token['userId'])
         if authRec == None:
-            return self.setError(AllError.MightBeLeftUser)
+            return self.setError(scode, AllError.MightBeLeftUser)
         if authRec['password'] != oldPasswd:
-            return self.setError(AllError.MismatchOldPassword)
+            return self.setError(scode, AllError.MismatchOldPassword)
         if authRec['password'] == jdata['newpw']:
-            return self.setError(AllError.SameWithOldPassword)
+            return self.setError(scode, AllError.SameWithOldPassword)
         if self.userAuthRepository.updatePw(scode, token['userId'], jdata['newpw']) == False:
-            return self.setError(AllError.FailToChangePW)
+            return self.setError(scode, AllError.FailToChangePW)
         return self.setOk(scode, "Success")
 
     def findUserName(self, scode, jdata):
         if len(jdata['userName']) < 6:
-            return self.setError(AllError.userIdMoreThan6Characters)
+            return self.setError(scode, AllError.userIdMoreThan6Characters)
         appId, scode = self.appToken.parseApp(jdata['appToken'])
         err = self.appToken.checkScode(scode)
         if err != AllError.ok:
             return self.setError(scode, err)
         userRec = self.userRepository.findUserName(scode, jdata['userName'])
         if userRec is None:
-            return self.setError(AllError.NotExistUserId)
+            return self.setError(scode, AllError.NotExistUserId)
         return self.setOk(scode, 'Exist')
 
     def userChangeEmail(self, scode, jdata):

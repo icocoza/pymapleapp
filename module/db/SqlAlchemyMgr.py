@@ -50,7 +50,7 @@ class SqlAlchemyMgr:
         finally:
             conn.close()
 
-    def insertOne(self, query):
+    def insert(self, query):
         try:
             conn = self.sqlEngine.connect()
             trans = conn.begin()
@@ -79,6 +79,6 @@ class SqlAlchemyMgr:
         finally:
             conn.close()
 
-    def updateOne(self, query):
+    def update(self, query):
         return self.insertOne(query)
     

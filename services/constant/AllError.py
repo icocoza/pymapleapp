@@ -85,6 +85,7 @@ class AllError(Enum):
 	wrong_appid = auto()
 	unknown_datatype = auto()
 	
+	UnknownAuthType = auto()
 	FailedUserRegister = auto()
 	ExistUserName = auto()
 	NotExistUserId = auto()

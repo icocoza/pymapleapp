@@ -8,18 +8,23 @@ from repository.db.MultiDbRepository import MultiDbRepository
 class BoardContentRepository(MultiDbRepository):
 
 	def insert(self, scode, boardId, userId, content):
-		sql = f"INSERT INTO boardContent (boardId, userId, content) VALUES('{boardId}', '{userId}', '{content}')"
-		return self.insertQuery(scode, sql)
+		params = (boardId, userId, content)
+		return super().execute(scode, self.qInsert(), params)
 
 	def updateDelete(self, scode, boardId, userId):
-		sql = f"UPDATE boardContent SET deletedAt=NOW() WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)
+		sql = "UPDATE boardContent SET deletedAt=NOW() WHERE userId=%s AND boardId=%s"
+		params = (userId, boardId)
+		return super().execute(scode, sql, params)
 
 	def updateContent(self, scode, boardId, userId, content):
-		sql = f"UPDATE boardContent SET content='{content}' WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)
+		sql = "UPDATE boardContent SET content=%s WHERE userId='%s AND boardId=%s"
+		params = (content, userId, boardId)
+		return super().updateQuery(scode, sql, params)
 
 	def getContent(self, scode, boardId):
 		sql = f"SELECT * FROM boardContent WHERE boardId='{boardId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
     
+	def qInsert(self):
+		sql = 'INSERT INTO boardContent (boardId, userId, content) VALUES(%s, %s, %s)'
+		return sql

@@ -17,13 +17,13 @@ class DbRepository:
         return MySqlManager.instance().select(sql)
 
     def updateQuery(self, sql):
-        return MySqlManager.instance().updateOne(sql)
+        return MySqlManager.instance().update(sql)
 
     def deleteQuery(self, sql):
-        return MySqlManager.instance().updateOne(sql)
+        return MySqlManager.instance().update(sql)
 
     def insertQuery(self, sql):
-        return MySqlManager.instance().insertOne(sql)
+        return MySqlManager.instance().insert(sql)
 
     def upsertQueries(self, queries):
         return MySqlManager.instance().insertQueries(queries)
@@ -38,13 +38,13 @@ class DbRepository:
         return MySqlManager.instance().select(sql)
 
     def update(self, sql):
-        return MySqlManager.instance().updateOne(sql)
+        return MySqlManager.instance().update(sql)
 
     def delete(self, sql):
-        return MySqlManager.instance().updateOne(sql)
+        return MySqlManager.instance().update(sql)
 
     def insert(self, sql):
-        return MySqlManager.instance().insertOne(sql)
+        return MySqlManager.instance().insert(sql)
 
     def execute(self, sql, params):
         return MySqlManager.instance().execute(sql, params)

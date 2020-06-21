@@ -14,7 +14,7 @@ class BoardDetailRepository(MultiDbRepository):
 				LEFT JOIN boardscrap ON board.boardid=boardscrap.boardid \
 				LEFT JOIN scrap ON scrap.scrapid=boardscrap.scrapid \
 				WHERE board.category='{category}' AND board.deleted=false ORDER BY board.createtime DESC LIMIT {offset}, {count}"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	
 	def getBoardListByIds(self, scode, boardIds):
 		ids = ','.join(["'" + str(id)+"'" for id in boardIds])
@@ -24,7 +24,7 @@ class BoardDetailRepository(MultiDbRepository):
 				LEFT JOIN boardscrap ON board.boardid=boardscrap.boardid \
 				LEFT JOIN scrap ON scrap.scrapid=boardscrap.scrapid \
 				WHERE board.boardid IN ({ids}) ORDER BY FIELD(board.boardid, {ids})"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	
 	def getCropfilePath(self, scode, rec):
 		if(rec.fileName==None or len(rec.fileName) < 1):

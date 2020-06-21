@@ -10,5 +10,5 @@ class MsgReadRepository(MultiDbRepository):
 
 	def insert(self, scode, channelId, userId, messageId):
 		sql = f"INSERT INTO chatReadMessage (channelId, userId, messageId) VALUES('{channelId}', '{userId}', '{messageId}')"
-		return super.insert(scode, sql)
+		return super().insert(scode, sql)
 

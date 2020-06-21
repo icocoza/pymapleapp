@@ -19,4 +19,4 @@ class ScrapDetailRepository(MultiDbRepository):
 			    LEFT JOIN scrapbody ON scrap.scrapid = scrapbody.scrapid \
 				LEFT JOIN boardscrap ON scrap.scrapid = boardscrap.scrapid \
 				WHERE boardscrap.boardid='{boardId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)

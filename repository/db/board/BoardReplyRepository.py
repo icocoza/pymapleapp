@@ -10,24 +10,24 @@ class BoardReplyRepository(MultiDbRepository):
 	def insert(self, scode, replyId, boardId, parentId, userId, userName, depth, body):
 		sql = f"INSERT INTO boardReply (replyId, parentId, boardId, userId, userName, depth, body) \
 				VALUES('{replyId}', '{parentId}', '{boardId}', '{userId}', '{userName}', {depth}, '{body}')"
-		return self.insertQuery(scode, sql)	
+		return super().insertQuery(scode, sql)	
 
 	def delete(self, scode, replyId, userId):
 		sql = f"DELETE FROM boardReply WHERE replyId='{replyId}' AND userId='{userId}"
-		return self.deleteQuery(scode, sql)	
+		return super().deleteQuery(scode, sql)	
 
 	def deleteIfNoChild(self, scode, replyId, boardId, userId):
 		sql = f"SELECT replyId FROM boardReply WHERE parentId='{replyId}'"
-		if(self.exist(scode, sql)==False):
+		if(super().exist(scode, sql)==False):
 			sql = f"DELETE FROM boardReply WHERE boardId='{boardId}' AND replyId='{replyId}' AND userId='{userId}'"
 			return self.deleteQuery(scode, sql)		
-		return self.updateMsg(replyId, userId, "-- deleted by user --")	
+		return super().updateMsg(replyId, userId, "-- deleted by user --")	
 
 	def updateMsg(self, scode, replyId, userId, body):
 		sql = f"UPDATE boardReply SET body='{body}' WHERE replyId='{replyId}' AND userId='{userId}'"
-		return self.updateQuery(scode, sql)	
+		return super().updateQuery(scode, sql)	
 
 	def getList(self, scode, boardId, offset, count):
 		sql = f"SELECT * FROM boardReply WHERE boardId='{boardId}' LIMIT {offset}, {count}"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	

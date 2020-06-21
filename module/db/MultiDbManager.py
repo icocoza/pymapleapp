@@ -43,13 +43,13 @@ class MultiDbManager:
 
     def select(self, scode, query):
         if scode not in self.dbManagerMap:
-            return []
+            return None
         return self.dbManagerMap[scode].select(query)
     
     def insert(self, scode, query):
         if scode not in self.dbManagerMap:
             return False
-        return self.dbManagerMap[scode].insertOne(query)
+        return self.dbManagerMap[scode].insert(query)
 
     def insertMany(self, scode, queries):
         if scode not in self.dbManagerMap:
@@ -64,14 +64,20 @@ class MultiDbManager:
     def update(self, scode, query):
         if scode not in self.dbManagerMap:
             return False
-        return self.dbManagerMap[scode].updateOne(query)
+        return self.dbManagerMap[scode].update(query)
     
     def delete(self, scode, query):
         if scode not in self.dbManagerMap:
             return False
-        return self.dbManagerMap[scode].updateOne(query)
+        return self.dbManagerMap[scode].update(query)
 
     def nonSelect(self, scode, query):
         if scode not in self.dbManagerMap:
             return False
         return self.dbManagerMap[scode].nonSelect(query)
+
+    
+    def execute(self, query, params):
+        if scode not in self.dbManagerMap:
+            return False
+        return self.dbManagerMap[scode].execute(query, params)

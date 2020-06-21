@@ -1,5 +1,6 @@
 import os, sys, json, datetime
 
+from services.constant.AllError import AllError
 from services.actions.AdminCmdAction import AdminCmdAction
 from services.actions.BoardCmdAction import BoardCmdAction
 from services.actions.ChannelCmdAction import ChannelCmdAction
@@ -9,7 +10,9 @@ from services.actions.MessageCmdAction import MessageCmdAction
 from services.actions.UserCmdAction import UserCmdAction
 
 from services.actions.user.SigninToken import SigninToken
+from services.actions.user.AppToken import AppToken
 
+from module.db.MultiDbHelper import MultiDbHelper
 import logging
 
 class MapleWorker:
@@ -40,6 +43,8 @@ class MapleWorker:
         
         self.signinToken = SigninToken()
 
+        self.appToken = AppToken()
+
     def work(self, jstr):
         jsonobj = json.loads(jstr)
         self.workJson(jsonobj['scode'], jsonobj['data'])
@@ -51,9 +56,18 @@ class MapleWorker:
         #TODO this needs to check the api-key
         if cmd in self.adminFunctionMap:
             return self.adminFunctionMap[cmd](data)
-        elif cmd in self.userFunctionMap:
-            return self.userFunctionMap[cmd](scode, data)
-        elif cmd in self.appFunctionMap:
-            session = self.signinToken.parse(data['signinToken'])
-            return self.appFunctionMap[cmd](scode, session, data)
+        else:
+            if MultiDbHelper.instance().hasScode(scode) == False:
+                err = self.appToken.checkScode(scode)
+                if err != AllError.ok:
+                    return self.setError(scode, err)
+
+            if cmd in self.userFunctionMap:
+                return self.userFunctionMap[cmd](scode, data)
+            elif cmd in self.appFunctionMap:
+                session = self.signinToken.parse(data['signinToken'])
+                return self.appFunctionMap[cmd](scode, session, data)
         return None
+
+    def setError(self, scode, msg):
+        return {'scode': scode, 'result': 'error', 'data': msg}

@@ -7,42 +7,46 @@ from repository.db.MultiDbRepository import MultiDbRepository
 
 class BoardRepository(MultiDbRepository):
 
-
 	def insert(self, scode, boardId, userId, userName, title, shortContent, hasImage, hasFile, category, contentType):
 		sql = f"INSERT INTO board (boardId, userId, userName, title, shortContent, hasImage, hasFile, category, contentType) \
-				VALUES('{boardId}', '{userId}', '{userName}', '{title}', '{shortContent}', {hasImage}, {hasFile}, '{category}', '{contentType}')"
-		return self.insertQuery(scode, sql)
+				VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+		params = (boardId, userId, userName, title, shortContent, hasImage, hasFile, category, contentType)
+		return super().execute(scode, sql, params)
 	
 	def updateDelete(self, scode, boardId, userId):
 		sql = f"UPDATE board SET deletedAt=NOW() WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)
+		return super().updateQuery(scode, sql)
 
 	def deleteBoard(self, scode, boardId, userId):
 		sql = f"DELETE FROM board WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)
+		return super().updateQuery(scode, sql)
 
 	def updateBoard(self, scode, boardId, userId, title, shortContent, hasImage, hasFile, category, contentType):
-		sql = f"UPDATE board SET title='{title}', shortContent='{shortContent}', hasImage={hasImage}, hasFile={hasFile}, \
-				category='{category}', contentType='{contentType}' WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)
+		sql = f"UPDATE board SET title=%s, shortContent=%s, hasImage=%s, hasFile=%s, \
+				category=%s, contentType=%s WHERE userId=%s AND boardId=%s"
+		params = (title, shortContent, hasImage, hasFile, category, contentType, userId, boardId)
+		return super().execute(scode, sql, params)
 	
 	def updateTitle(self, scode, boardId, userId, title):
 		sql = f"UPDATE board SET title='{title}' WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)
+		params = (title, userId, boardId)
+		return super().execute(scode, sql, params)
 	
-	def updateContent(self, scode, boardId, userId, content, hasImage, hasFile):
-		sql = f"UPDATE board SET content='{content}', hasImage={hasImage}, hasFile={hasFile} WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)	
+	def updateContent(self, scode, boardId, userId, shortContent, hasImage, hasFile):
+		sql = f"UPDATE board SET shortContent='{shortContent}', hasImage={hasImage}, hasFile={hasFile} WHERE userId='{userId}' AND boardId='{boardId}'"
+		params = (shortContent, hasImage, hasFile, userId, boardId)
+		return super().execute(scode, sql, params)	
 
 	def updateCategory(self, scode, boardId, userId, category):
 		sql = f"UPDATE board SET category='{category}' WHERE userId='{userId}' AND boardId='{boardId}'"
-		return self.updateQuery(scode, sql)	
+		params = (category, userId, boardId)
+		return super().execute(scode, sql, params)
 
 	def getListByCategory(self, scode, category, offset, count):
 		sql = f"SELECT * FROM board WHERE category='{category}' ORDER BY createdAt DESC LIMIT {offset}, {count}"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	
 	def getListByUserId(self, scode, userId, category, offset, count):
 		sql = f"SELECT * FROM board WHERE userId='{userId}' AND category='{category}' ORDER BY createdAt DESC LIMIT {offset}, {count}"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	

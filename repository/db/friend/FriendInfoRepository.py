@@ -12,7 +12,7 @@ class FriendInfoRepository(MultiDbRepository):
 		sql = f"SELECT userId, userName, userType, email FROM userAuth WHERE userId IN (SELECT userId FROM friend WHERE friendId='{userId}' LIMIT {offset}, {count})"
 		if('all' != friendType):
 			sql = f"SELECT userId, userName, userType, email FROM userAuth WHERE userId IN (SELECT userId FROM friend WHERE friendId='{userId}' AND friendType='{friendType}') LIMIT {offset}, {count}"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 
 
 

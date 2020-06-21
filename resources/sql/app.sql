@@ -217,9 +217,9 @@ CREATE TABLE IF NOT EXISTS  `userPush` (
 
 CREATE TABLE IF NOT EXISTS  `userToken` (
   `userId` varchar(64) NOT NULL,
-  `uuid` varchar(128) DEFAULT NULL,
+  `uuid` varchar(64) DEFAULT NULL,
   `tokenId` varchar(64) NOT NULL,
-  `token` varchar(128) NOT NULL,
+  `token` varchar(256) NOT NULL,
   `enabled` tinyint(1) DEFAULT '0',
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
   `expiredAt` datetime DEFAULT NULL,  

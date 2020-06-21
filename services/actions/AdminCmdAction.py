@@ -24,7 +24,7 @@ class AdminCmdAction(Action):
         self.adminAppRepository = AdminAppRepository()
 
         self.funcMap = {}
-        self.funcMap[EAdminCmd.adminAdminRegister.name] = lambda jdata: self.adminRegister(jdata)
+        self.funcMap[EAdminCmd.adminAdminRegister.name] = lambda jdata: self.adminAdminRegister(jdata)
         self.funcMap[EAdminCmd.adminRegister.name] = lambda jdata: self.adminRegister(jdata)
         self.funcMap[EAdminCmd.adminLogin.name] = lambda jdata: self.adminLogin(jdata)
         self.funcMap[EAdminCmd.adminLogout.name] = lambda jdata: self.adminLogout(jdata)
@@ -86,7 +86,7 @@ class AdminCmdAction(Action):
 
     def addApp(self, jdata):
         ret = self.__checkAdminToken(jdata)
-        if isinstance(ret, dict):
+        if isinstance(ret, dict) and 'result' in ret:
             return ret
         token = ret
         scode = jdata['scode']
@@ -113,7 +113,7 @@ class AdminCmdAction(Action):
 
     def delApp(self, jdata):
         ret = self.__checkAdminToken('admin', jdata, passwd=True)
-        if isinstance(ret, dict):
+        if isinstance(ret, dict) and 'result' in ret:
             return ret
         token = ret
         scode = jdata['scode']
@@ -125,7 +125,7 @@ class AdminCmdAction(Action):
 
     def appList(self, jdata):
         ret = self.__checkAdminToken(jdata)
-        if isinstance(ret, dict):
+        if isinstance(ret, dict) and 'result' in ret:
             return ret
         token = ret
         appList = self.adminAppRepository.getAppList(token['userId'])
@@ -136,7 +136,7 @@ class AdminCmdAction(Action):
 
     def modifyApp(self, jdata):
         ret = self.__checkAdminToken(jdata, passwd=True)
-        if isinstance(ret, dict):
+        if isinstance(ret, dict) and 'result' in ret:
             return ret
         token = ret
         scode = jdata['scode']
@@ -149,7 +149,7 @@ class AdminCmdAction(Action):
 
     def appCount(self, jdata):
         ret = self.__checkAdminToken(jdata)
-        if isinstance(ret, dict):
+        if isinstance(ret, dict) and 'result' in ret:
             return ret
         token = ret
         count = self.adminAppRepository.getAppCount(token['userId'], jdata['status'])
@@ -157,7 +157,7 @@ class AdminCmdAction(Action):
 
     def updateAppStatus(self, jdata):
         ret = self.__checkAdminToken(jdata, passwd=True)
-        if isinstance(ret, dict):
+        if isinstance(ret, dict) and 'result' in ret:
             return ret
         token = ret
         scode = jdata['scode']
@@ -167,7 +167,7 @@ class AdminCmdAction(Action):
 
     def adminUserList(self, jdata):
         ret = self.__checkAdminToken(jdata)
-        if isinstance(ret, dict):
+        if isinstance(ret, dict) and 'result' in ret:
             return ret
         token = ret
         if 'role' not in token or token['role'] != 'admin':

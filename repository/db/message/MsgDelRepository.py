@@ -11,7 +11,7 @@ class MsgDelRepository(MultiDbRepository):
 
 	def insert(self, scode, channelId, userId, messageId):
 		sql = f"INSERT INTO chatDelMessage (channelId, userId, messageId) VALUES('{channelId}', '{userId}', '{messageId}')"
-		return super.insert(scode, sql)
+		return super().insert(scode, sql)
 
 
 	def getDelMessageIdList(self, scode, channelId, userId, joinAt):

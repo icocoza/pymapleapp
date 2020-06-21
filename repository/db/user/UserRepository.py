@@ -10,57 +10,57 @@ import time
 class UserRepository(MultiDbRepository):
 
 	def insert(self, scode, userId, userName, isAnonymous):
-		return self.insert(self.qInsert(userId, userName, isAnonymous)) 
+		return super().insert(scode, self.qInsert(userId, userName, isAnonymous)) 
 
 
 	def insertDetail(self, scode, userId, userName, isAnonymous, osType, osVersion, appVersion):
-		return self.insert(self.qInsert(userId, userName, isAnonymous, osType, osVersion, appVersion)) 
+		return super().insert(scode, self.qInsert(userId, userName, isAnonymous, osType, osVersion, appVersion)) 
 
 
 	def updateUserDetail(self, scode, userId, osType, osVersion, appVersion):
-		return self.update(self.qUpdateUser(userId, osType, osVersion, appVersion))
+		return super().update(scode, self.qUpdateUser(userId, osType, osVersion, appVersion))
 
 
 	def delete(self, scode, userId):
 		sql = f"DELETE FROM user WHERE userId='{userId}'"
-		return self.delete(scode, sql)
+		return super().delete(scode, sql)
 
 
 	def getUser(self, scode, userId):
 		sql = f"SELECT * FROM user WHERE userId='{userId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 	def getUserIdByUserName(self, scode, userName):
 		sql = f"SELECT userId FROM user WHERE userName='{userName}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 	def findUserName(self, scode, userName):
 		sql = f"SELECT * FROM user WHERE userName='{userName}'"
-		return self.selectQuery(scode, sql) != None
+		return super().selectOne(scode, sql) != None
 
 	def updateAppCode(self, scode, userId, inAppcode):
 		sql = f"UPDATE user SET inAppcode='{inAppcode}' WHERE userId='{userId}'"
-		return self.update(scode, sql)
+		return super().update(scode, sql)
 
 
 	def updateLastVisit(self, scode, userId):
 		sql = f"UPDATE user SET lastAt=now() WHERE userId='{userId}'"
-		return self.update(scode, sql)
+		return super().update(scode, sql)
 
 
 	def updateLeave(self, scode, userId):
 		sql = f"UPDATE user SET leftAt=now() WHERE userId='{userId}'"
-		return self.update(scode, sql)
+		return super().update(scode, sql)
 
 
 	def updateUsername(self, scode, userId, userName):
 		sql = f"UPDATE user SET userName='{userName}', lastAt=now() WHERE userId='{userId}'"
-		return self.update(scode, sql)
+		return super().update(scode, sql)
 
 
 	def changeAnonymousToNormal(self, scode, userId):
 		sql = f"UPDATE user SET anonymous=TRUE, lastAt=now() WHERE userId='{userId}'"
-		return self.update(scode, sql)
+		return super().update(scode, sql)
 
 
 	# def isSameAppCode(self, scode, inAppcode):
@@ -68,7 +68,7 @@ class UserRepository(MultiDbRepository):
 
 
 	def updateUserLike(self, scode, userId, likes, cancel):
-		return self.update(self.qUpdateUserLike(userId, likes, cancel))
+		return super().update(scode, self.qUpdateUserLike(userId, likes, cancel))
 
 
 	def qInsert(self, scode, userId, userName, isAnonymous):
@@ -80,7 +80,7 @@ class UserRepository(MultiDbRepository):
 				 VALUES('{userId}', '{userName}', {isAnonymous}, '{osType}', '{osVersion}', '{appVersion}', {int(round(time.time() * 1000))}, 0, 0)"
 
 
-	def qUpdateUser(self, scode, userId, osType, osVersion, appVersion):
+	def qUpdateUser(self, userId, osType, osVersion, appVersion):
 		return f"UPDATE user SET osType='{osType}', osVersion='{osVersion}', appVersion='{appVersion}', lastAt=now() WHERE userId='{userId}'"
 
 

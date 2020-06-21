@@ -11,7 +11,7 @@ class ScrapBodyRepository(MultiDbRepository):
 	
 	def insert(self, scode, scrapId,  body):
 		sql = qInsertScrapBody(scrapId, body)
-		return self.insertQuery(scode, sql)
+		return super().insertQuery(scode, sql)
 
 
 	def qInsertScrapBody(self, scode, scrapId, body):
@@ -20,9 +20,9 @@ class ScrapBodyRepository(MultiDbRepository):
 	
 	def getScrapBody(self, scode, scrapId):
 		sql = f"SELECT * FROM scrapBody WHERE scrapId='{scrapId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 
 		
 	def updateScrapBody(self, scode, scrapId, body):
 		sql = f"UPDATE scrapBody SET body='{body}' WHERE scrapId='{scrapId}'"
-		return self.updateQuery(scode, sql)
+		return super().updateQuery(scode, sql)

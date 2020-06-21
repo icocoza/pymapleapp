@@ -54,4 +54,5 @@ def getMapleUuid(prefix):
     return prefix + hashlib.sha1(str(uuid.uuid1()).encode()).hexdigest() + str(int(round(time.time() * 1000)))
 
 def getSha256(data):
-    return hashlib.sha256(data.encode()).hexdigest()
+    enc = hashlib.sha256(data.encode()).hexdigest()
+    return enc

@@ -11,12 +11,12 @@ class SigninToken:
         startAt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         tokenId = StrUtils.getMapleUuid('tokenId:')
-        token = CryptoHelper.enc(tokenId + chr(31) + loginTokenId + chr(31) + scode + chr(31) + userId + chr(31) + userName + chr(31) + uuid + chr(31) + startAt)
+        token = CryptoHelper.encrypt(tokenId + chr(31) + loginTokenId + chr(31) + scode + chr(31) + userId + chr(31) + userName + chr(31) + uuid + chr(31) + startAt)
         
         return tokenId, token
 
     def parse(self, token):
-        token = CryptoHelper.dec(token)
+        token = CryptoHelper.decrypt(token)
         token = token.split(chr(31), -1)
         if len(token) < 7:
             return None

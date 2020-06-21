@@ -10,16 +10,16 @@ from repository.db.MultiDbRepository import MultiDbRepository
 class UserAuthRepository(MultiDbRepository):
 
 	def insertUserIdPw(self, scode, userId, userName, password):
-		return self.insert(qInsertUserNamePw(userId, password))
+		return super().insert(qInsertUserNamePw(userId, password))
 
 
 	def qInsertUserNamePw(self, scode, userId, userName, password):
 		password = hashlib.sha256(password.encode()).hexdigest()
-		return f"INSERT INTO userAuth (userId, password, authType) VALUES('{userId}', '{password}', 'idpw')"
+		return f"INSERT INTO userAuth (userId, userName, password, authType) VALUES('{userId}', '{userName}', '{password}', 'idpw')"
 
 
 	def insertEmail(self, scode, userId, email):
-		return self.insert(qInsertEmail(userId, email))
+		return super().insert(qInsertEmail(userId, email))
 
 
 	def qInsertEmail(self, scode, userId, email):
@@ -27,7 +27,7 @@ class UserAuthRepository(MultiDbRepository):
 
 
 	def insertPhoneNo(self, scode, userId, mobileNo):
-		return self.insert(qInsertPhoneNo(userId, mobileNo))
+		return super().insert(qInsertPhoneNo(userId, mobileNo))
 
 
 	def qInsertPhoneNo(self, scode, userId, mobileNo):
@@ -35,11 +35,11 @@ class UserAuthRepository(MultiDbRepository):
 
 	def getUser(self, scode, userId):
 		sql = f"SELECT * FROM userAuth WHERE userId='{userId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 	def getUserByUserName(self, scode, userName):
 		sql = f"SELECT * FROM userAuth WHERE userName='{userName}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 	def findUserId(self, scode, userId):
 		return self.getUser(scode, userId) != None
@@ -49,7 +49,7 @@ class UserAuthRepository(MultiDbRepository):
 
 	def getUserByEmail(self, scode, email):
 		sql = f"SELECT * FROM userAuth WHERE email='{email}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 	def findEmail(self, scode, email):
 		return self.getUserByEmail(scode, email) != None
@@ -57,49 +57,49 @@ class UserAuthRepository(MultiDbRepository):
 	
 	def getUserByMobile(self, scode, mobileNo):
 		sql = f"SELECT * FROM userAuth WHERE mobileNo='{mobileNo}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 	def findMobile(self, scode, mobileNo):
 		return self.getUserByMobile(scode, mobileNo) != None
 
 	def findUserAuth(self, scode, userId, email, mobileNo):
 		sql = f"SELECT * FROM userAuth WHERE userId='{userId}' OR email='{email}' OR mobileNo='{mobileNo}'"
-		auth = self._selectToJson(self.selectQuery(scode, sql))
+		auth = super().selectQuery(scode, sql)
 		if len(auth) < 1:
 			return None
 		return auth['authType']
 
 	def updatePw(self, scode, userId, password):
-		return self.update(qUpdatePw(userId, password))
+		return super().update(scode, self.qUpdatePw(userId, password))
 
 
-	def qUpdatePw(self, scode, userId, password):
+	def qUpdatePw(self, userId, password):
 		password = hashlib.sha256(password.encode()).hexdigest()
 		return f"UPDATE userAuth SET password='{password}' WHERE userId='{userId}'"
 
 	def updateEmailCode(self, scode, email, emailCode):
-		return self.update(qUpdateEmailCode(email, emailCode))
+		return super().update(scode, self.qUpdateEmailCode(email, emailCode))
 
 
-	def qUpdateEmailCode(self, scode, email, emailCode):
+	def qUpdateEmailCode(self, email, emailCode):
 		return f"UPDATE userAuth SET emailCode='{emailCode}' WHERE email='{email}'"
 
 	def updateSMSCode(self, scode, mobileNo, smsCode):
-		return self.update(qUpdateSMSCode(mobileNo, smsCode))
+		return super().update(scode, self.qUpdateSMSCode(mobileNo, smsCode))
 
 
-	def qUpdateSMSCode(self, scode, mobileNo, smsCode):
+	def qUpdateSMSCode(self, mobileNo, smsCode):
 		return f"UPDATE userAuth SET smsCode='{smsCode}' WHERE mobileNo='{mobileNo}'"
 
 
 	def updateUserQuit(self, scode, userId):
 		sql = f"UPDATE userAuth SET authType='quit' WHERE userId='{userId}'"
-		return self.update(scode, sql)
+		return super().update(scode, sql)
 
 
 	def deleteUser(self, scode, userId):
 		sql = f"DELETE FROM userAuth WHERE userId='{userId}'"
-		return self.delete(scode, sql)
+		return super().delete(scode, sql)
 
 
 	# def isSameAuthId(self, scode, authType, userId ):

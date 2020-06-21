@@ -12,5 +12,5 @@ class MsgDelIdRepository(MultiDbRepository):
 	def getList(self, scode, channelId, userId, joinAt):
 		strToDate = f"STR_TO_DATE('{joinAt.strftime('yyyy-MM-dd hh:mm:ss')}', '%Y-%m-%d %H:%i:%s')"
 		sql = f"SELECT messageId FROM chatDelMessage WHERE channelId='{channelId}' AND userId='{userId}' AND createdAt > {strToDate}"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 

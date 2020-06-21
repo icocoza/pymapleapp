@@ -9,21 +9,21 @@ class MultiDbRepository:
 
     def selectOne(self, scode, sql):
         result = MultiDbManager.instance().select(scode, sql)
-        if len(result) < 1:
+        if result is None:
             return None
         return result[0]
-        
+
     def selectQuery(self, scode, sql):
         return MultiDbManager.instance().select(scode, sql)
 
     def updateQuery(self, scode, sql):
-        return MultiDbManager.instance().updateOne(scode, sql)
+        return MultiDbManager.instance().update(scode, sql)
 
     def deleteQuery(self, scode, sql):
-        return MultiDbManager.instance().updateOne(scode, sql)
+        return MultiDbManager.instance().update(scode, sql)
 
     def insertQuery(self, scode, sql):
-        return MultiDbManager.instance().insertOne(scode, sql)
+        return MultiDbManager.instance().insert(scode, sql)
 
     def upsertQueries(self, scode, queries):
         return MultiDbManager.instance().insertQueries(scode, queries)
@@ -41,10 +41,13 @@ class MultiDbRepository:
         return MultiDbManager.instance().select(scode, sql)
 
     def update(self, scode, sql):
-        return MultiDbManager.instance().updateOne(scode, sql)
+        return MultiDbManager.instance().update(scode, sql)
 
     def delete(self, scode, sql):
-        return MultiDbManager.instance().updateOne(scode, sql)
+        return MultiDbManager.instance().update(scode, sql)
 
     def insert(self, scode, sql):
-        return MultiDbManager.instance().insertOne(scode, sql)
+        return MultiDbManager.instance().insert(scode, sql)
+
+    def execute(self, scode, sql, params):
+        return MultiDbManager.instance().execute(scode, sql, params)

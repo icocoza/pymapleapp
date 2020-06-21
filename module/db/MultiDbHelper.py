@@ -31,7 +31,7 @@ class MultiDbHelper(DbConnectionListener):
         self.onEventDbDisconnect += self.onDbDisconnected
 
         self.databaseMaker = DatabaseMaker()
-        
+
     def hasScode(self, scode):
         return MultiDbManager.instance().hasScode(scode)
 

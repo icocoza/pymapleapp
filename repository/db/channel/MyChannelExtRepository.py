@@ -14,5 +14,5 @@ class MyChannelExtRepository(MultiDbRepository):
 				chatMyChannel.modifiedAt, chatChannel.attendeeCount, channel.lastMessage \
 				FROM chatMyChannel JOIN chatChannel ON(chatMyChannel.channelId = chatChannel.channelId) \
 				WHERE chatMyChannel.userId='{userId}' ORDER BY chatMyChannel.modifiedAt DESC LIMIT {offset}, {count}"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 

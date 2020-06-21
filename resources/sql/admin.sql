@@ -1,4 +1,4 @@
-CREATE TABLE `adminUser` (
+CREATE TABLE `admin`.`adminUser` (
   `userId` varchar(64) NOT NULL,
   `email` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,

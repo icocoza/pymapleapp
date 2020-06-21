@@ -11,12 +11,12 @@ class BoardVoteUserCountRepository(MultiDbRepository):
 	def getVoteCount(self, scode, boardIds):
 		ids = ','.join(["'" + str(id)+"'" for id in boardIds])
 		sql = f"SELECT boardId, count(boardId) as voteCount FROM voteUser WHERE boardId in ({ids}) group by boardId"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 
 	def getVotedBoardId(self, scode, userId, boardIds):
 		ids = ','.join(["'" + str(id)+"'" for id in boardIds])
 		sql = f"SELECT boardId FROM voteUser WHERE boardId in ({ids}) AND userId='{userId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	
 	
 	

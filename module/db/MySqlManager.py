@@ -130,9 +130,12 @@ class MySqlManager:
                 conn.close()
 
     def insertQueries(self, queries):
-        self.multiQueries(queries)
+        return self.multiQueries(queries)
+
+    def insert(self, query):
+        return self.nonSelect(query)
         
-    def updateOne(self, query):
+    def update(self, query):
         return self.nonSelect(query)
     
     def nonSelect(self, query):

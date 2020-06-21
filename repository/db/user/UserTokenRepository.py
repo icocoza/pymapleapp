@@ -10,34 +10,34 @@ class UserTokenRepository(MultiDbRepository):
 
 	def getTokenByUserId(self, scode, userId):		
 		sql = f"SELECT * FROM userToken WHERE userId='{userId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 
 	def getToken(self, scode, userId, uuid):
 		sql = f"SELECT * FROM userToken WHERE userId='{userId}' and uuid='{uuid}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 
 	def getTokenByUserTokenId(self, scode, userId, tokenId):
 		sql = f"SELECT * FROM userToken WHERE userId='{userId}' AND tokenId='{tokenId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 
 	def insertToken(self, scode, userId, uuid, tokenId, token):
-		return super.insert(qInsertToken(userId, uuid, tokenId, token, False))
+		return super().insert(qInsertToken(userId, uuid, tokenId, token, False))
 
 
 	def qInsertToken(self, scode, userId, uuid, tokenId, token, enabled):
 		return f"INSERT INTO userToken (userId, uuid, tokenId, token, enabled) VALUES('{userId}', '{uuid}', '{tokenId}', '{token}', {enabled})"
 
-	def updateToken(self, scode, userId, tokenId, token, enabled):
-		sql = f"UPDATE userToken SET token='{token}', enabled={enabled} WHERE userId='{userId}' AND tokenId='{tokenId}'"
-		return super.update(scode, sql)
+	def updateToken(self, scode, userId, uuid, tokenId, token, enabled):
+		sql = f"UPDATE userToken SET token='{token}', tokenId='{tokenId}', enabled={enabled} WHERE userId='{userId}' AND uuid='{uuid}'"
+		return super().update(scode, sql)
 
 
 	def enableToken(self, scode, userId, tokenId, enabled):
 		sql = f"UPDATE userToken SET enabled={enabled} WHERE userId='{userId}' AND tokenId='{tokenId}'"
-		return super.update(scode, sql)
+		return super().update(scode, sql)
 
 
 	def qDeleteTokenByUuid(self, scode, userId, uuid):
@@ -46,9 +46,9 @@ class UserTokenRepository(MultiDbRepository):
 
 	def delete(self, scode, userId, tokenId):
 		sql = f"DELETE FROM userToken WHERE userId='{userId}' AND token='{tokenId}'"
-		return super.delete(scode, sql)
+		return super().delete(scode, sql)
 
 
 	def delete(self, scode, userId):
 		sql = f"DELETE FROM userToken WHERE userId='{userId}'"
-		return super.delete(scode, sql)
+		return super().delete(scode, sql)

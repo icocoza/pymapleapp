@@ -27,7 +27,8 @@ class AdminAppRepository(DbRepository):
 
     def getAppByScode(self, scode):
         sql = f"SELECT * FROM adminApp WHERE scode='{scode}'"
-        return self.selectQuery(sql)    
+        result = self.selectQuery(sql)
+        return None if result is None else result[0]
 
     def updateApp(self, userId, scode, title, description, status):
         params = (title, description, status, userId, scode)

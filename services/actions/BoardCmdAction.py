@@ -72,9 +72,7 @@ class BoardCmdAction(Action):
 
         self.imageTool = ImageTool()
 
-    def __addBoard(self, scode, session, jdata, scrapIds):
-        userId = session['userId']
-        userName = session['userName']
+    def __addBoard(self, scode, userId, userName, jdata, scrapIds):
         boardId = StrUtils.getMapleUuid('boardId:')
 
         userRec = self.userRepository.getUser(scode, userId)
@@ -84,8 +82,14 @@ class BoardCmdAction(Action):
                                        jdata['hasImage'], jdata['hasFile'], jdata['category'], jdata['contentType'] if 'contentType' not in jdata else 'text') == False:
             return self.setError(scode, AllError.FailAddBoard)
         
-        self.boardContentRepository.insert(scode, boardId, userId, jdata['content'])
-        self.boardCountRepository.insert(scode, boardId)
+        queries = []        
+        queries.append(self.boardContentRepository.qInsert(scode, boardId, userId, jdata['content']))
+        queries.append(self.boardCountRepository.qInsert(scode, boardId))
+
+        if scrapIds is not None and len(scrapIds) > 0:
+            for scrapId in scrapIds:
+                queries.append(self.boardScrapRepository.qInsertScrap(scode, boardId, scrapId))
+        self.boardScrapRepository.multiQueries(scode, queries)
 
         if 'fileIds' in jdata and len(jdata['fileIds']) > 0:
             self.uploadFileRepository.updateFilesEnabled(scode, jdata['fileIds'], boardId, True)
@@ -94,16 +98,11 @@ class BoardCmdAction(Action):
             if self.imageTool.cropImageByFilename(scode, userId, appconfig.upload_path, fileRec['fileName'], appconfig.crop_path):
                 self.fileRepository.updateCropped(scode, fileRec['fileId'], True)
 
-        queries = []
-        for scrapId in scrapIds:
-            queries.append(self.boardScrapRepository.qInsertScrap(scode, boardId, scrapId))
-        self.boardScrapRepository.multiQueries(scode, queries)
-
         return self.setOk(scode, {'boardId': boardId})
 
     def __findAndAddScrap(self, scode, userId, jdata):
         htmlScrapper = HtmlScrapper()
-        urls = StrUtils.extractUrls(scode, jdata['content'])
+        urls = StrUtils.extractUrls(jdata['content'])
         if len(urls) < 1 :
             return
         scrapIds = []
@@ -130,8 +129,11 @@ class BoardCmdAction(Action):
         return scrapIds
 
     def addBoard(self, scode, session, jdata):
-        scrapIds = self.__findAndAddScrap(scode, jdata)
-        return self.__addBoard(scode, session, jdata, scrapIds)
+        userId = session['userId']
+        userName = session['userName']
+
+        scrapIds = self.__findAndAddScrap(scode, userId, jdata)
+        return self.__addBoard(scode, userId, userName, jdata, scrapIds)
 
     def delBoard(self, scode, session, jdata):
         userId = session['userId']

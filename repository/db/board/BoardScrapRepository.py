@@ -10,20 +10,20 @@ class BoardScrapRepository(MultiDbRepository):
 
 	def insert(self, scode, boardId, scrapId):
 		sql = qInsertScrap(boardId, scrapId)
-		return self.insertQuery(scode, sql)
+		return super().insertQuery(scode, sql)
 	
 	def qInsertScrap(self, scode, boardId, scrapId):
 		return f"INSERT INTO boardScrap (boardId, scrapId) VALUES('{boardId}', '{scrapId}')"
 	
 	def getScrapId(self, scode, boardId):
 		sql = f"SELECT * FROM boardScrap WHERE boardId='{boardId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	
 	def getScrapIdList(self, scode, boardId):
 		sql = f"SELECT * FROM boardScrap WHERE boardId='{boardId}'"
-		return self.selectQuery(scode, sql)
+		return super().selectQuery(scode, sql)
 	
 	def delete(self, scode, boardId):
 		sql = f"DELETE FROM boardScrap WHERE boardId='{boardId}'"
-		return self.deleteQuery(scode, sql)
+		return super().deleteQuery(scode, sql)
 	
