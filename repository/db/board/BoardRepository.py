@@ -10,7 +10,7 @@ class BoardRepository(MultiDbRepository):
 	def insert(self, scode, boardId, userId, userName, title, shortContent, hasImage, hasFile, category, contentType):
 		sql = f"INSERT INTO board (boardId, userId, userName, title, shortContent, hasImage, hasFile, category, contentType) \
 				VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-		params = (boardId, userId, userName, title, shortContent, hasImage, hasFile, category, contentType)
+		params = (boardId, userId, userName, title, shortContent, hasImage=='True', hasFile=='True', category, contentType)
 		return super().execute(scode, sql, params)
 	
 	def updateDelete(self, scode, boardId, userId):
@@ -24,21 +24,21 @@ class BoardRepository(MultiDbRepository):
 	def updateBoard(self, scode, boardId, userId, title, shortContent, hasImage, hasFile, category, contentType):
 		sql = f"UPDATE board SET title=%s, shortContent=%s, hasImage=%s, hasFile=%s, \
 				category=%s, contentType=%s WHERE userId=%s AND boardId=%s"
-		params = (title, shortContent, hasImage, hasFile, category, contentType, userId, boardId)
+		params = (title, shortContent, hasImage=='True', hasFile=='True', category, contentType, userId, boardId)
 		return super().execute(scode, sql, params)
 	
 	def updateTitle(self, scode, boardId, userId, title):
-		sql = f"UPDATE board SET title='{title}' WHERE userId='{userId}' AND boardId='{boardId}'"
+		sql = f"UPDATE board SET title=%s WHERE userId=%s AND boardId=%s"
 		params = (title, userId, boardId)
 		return super().execute(scode, sql, params)
 	
 	def updateContent(self, scode, boardId, userId, shortContent, hasImage, hasFile):
-		sql = f"UPDATE board SET shortContent='{shortContent}', hasImage={hasImage}, hasFile={hasFile} WHERE userId='{userId}' AND boardId='{boardId}'"
-		params = (shortContent, hasImage, hasFile, userId, boardId)
+		sql = f"UPDATE board SET shortContent=%s, hasImage=%s, hasFile=%s WHERE userId=%s AND boardId=%s"
+		params = (shortContent, hasImage=='True', hasFile=='True', userId, boardId)
 		return super().execute(scode, sql, params)	
 
 	def updateCategory(self, scode, boardId, userId, category):
-		sql = f"UPDATE board SET category='{category}' WHERE userId='{userId}' AND boardId='{boardId}'"
+		sql = f"UPDATE board SET category=%s WHERE userId=%s AND boardId=%s"
 		params = (category, userId, boardId)
 		return super().execute(scode, sql, params)
 

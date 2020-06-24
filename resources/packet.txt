@@ -3,7 +3,7 @@ Admin
 * Request
 {
     "version": "v0.1",
-    "stype": "maple",    # default is ‘maple'
+    "stype": "maple",    
     "scode": "admin",
     "data": {
         "cmd": "adminRegister",
@@ -43,7 +43,7 @@ Admin
 
 {
     "version": "v0.1",
-    "stype": "maple",    # default is ‘maple'
+    "stype": "maple",    
     "scode": "admin",
     "data": {
         "cmd": "adminAppList",
@@ -53,7 +53,7 @@ Admin
 
 {
     "version": "v0.1",
-    "stype": "maple",    # default is ‘maple'
+    "stype": "maple",    
     "scode": "admin",
     "data": {
         "cmd": "adminModifyApp",
@@ -70,7 +70,7 @@ Admin
 
 {
     "version": "v0.1",
-    "stype": "maple",    # default is ‘maple'
+    "stype": "maple",    
     "scode": "admin",
     "data": {
         "cmd": "adminAppCount",
@@ -138,6 +138,7 @@ Admin
 
 ============================================================================================================================
 {
+    "version": "v0.1",
     "stype": "maple",   
     "scode": "serviceA",
 
@@ -154,5 +155,157 @@ Admin
         ]
         "scrapIds": [
         ]
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "getBoardList",
+        "category": "Category01",
+        "offset": 0,
+        "count": 5
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "incBoardLike",
+        "boardId": "boardId:5283d6e4c2d6818e50ca23be22ed63c093f6596b1592821908968",
+        "added": true,
+        "preference": "happy"
+    }
+}
+
+
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "addReply",
+        "boardId": "boardId:5283d6e4c2d6818e50ca23be22ed63c093f6596b1592821908968",
+        "parentReplyId": "",
+        "depth": 1,
+        "body": "reply text"
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",   
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "delReply",
+        "replyId": "replyId:001"
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "replyList",
+        "boardId": "boardId:@3kjlksdfklsdf",
+        "offset": 0,
+        "count": 5
+    }
+}
+
+======================= vote =======================
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "addVote",
+        "title": "title",
+        "content": "content",
+        "hasImage": "False",
+        "hasFile": "False",
+        "category": "Category01",
+        "contentType": "vote"
+        "expiredAt": "2020-05-31 12:00:00",
+        "voteItems": [   
+            "vote item 01",
+            "vote item 02"
+        ]
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "voteItemList",
+        "boardId": "boardId:@3kjlksdfklsdf",
+        "offset": 0,
+        "count": 5
+    }
+}
+
+
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "selectVoteItem",
+        "boardId": "boardId:@3kjlksdfklsdf",
+        "voteItemId: "voteItemId:2i3ujdjk",
+        "selected": True
+    }
+}
+
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "updateVote",
+        "boardId": "boardId:@3kjlksdfklsdf",
+        "expiredAt": "2020-05-31 12:00:00",
+        "closed": False,
+        "voteItems": [
+            {
+                "voteItemId": "voteItemId:234uiojkd",
+                "itemText": "vote item text"
+            },
+            { . . . }
+        ]
+    }
+}
+
+
+{
+    "version": "v0.1",
+    "stype": "maple",    
+    "scode": "serviceA",
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "changeVoteSelection",
+        "boardId": "boardId:@3kjlksdfklsdf",
+        "voteItemId": "voteItemId:234uiojkd"
     }
 }

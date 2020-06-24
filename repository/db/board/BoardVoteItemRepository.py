@@ -8,24 +8,22 @@ from repository.db.MultiDbRepository import MultiDbRepository
 class BoardVoteItemRepository(MultiDbRepository):
 
 	def insert(self, scode, boardId, voteItemId, itemText):
-		sql = f"INSERT INTO voteItem (voteItemId, boardId, itemText) VALUES('{voteItemId}','{boardId}','{itemText}')"
-		return super().insertQuery(scode, sql)
-	
+		params = (boardId, voteItemId, itemText)
+		sql = "INSERT INTO voteItem (voteItemId, boardId, itemText) VALUES(%s,%s,%s)"
+		return super().execute(sql, params)
 
 	def incVoteItem(self, scode, boardId, voteItemId):
 		sql = f"UPDATE voteItem SET selectcount=selectcount+1 WHERE voteItemId='{voteItemId}' AND boardId='{boardId}'"
 		return super().updateQuery(scode, sql)
 	
-
 	def decVoteItem(self, scode, boardId, voteItemId):
 		sql = f"UPDATE voteItem SET selectcount=selectcount-1 WHERE voteItemId='{voteItemId}' AND boardId='{boardId}'"
 		return super().updateQuery(scode, sql)
 	
-
 	def updateVoteText(self, scode, boardId, voteItemId, itemText):
-		sql = f"UPDATE voteItem SET itemText='{itemText}' WHERE boardId ='{boardId}' AND voteItemId='{voteItemId}'"
-		return super().updateQuery(scode, sql)
-	
+		params = (itemText, boardId, voteItemId)
+		sql = "UPDATE voteItem SET itemText=%s WHERE boardId =%s AND voteItemId=%s"
+		return super().execute(sql, params)
 
 	def deleteVote(self, scode, boardId):
 		sql = f"DELETE FROM voteItem WHERE boardId='{boardId}'"

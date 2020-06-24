@@ -23,7 +23,7 @@ class BoardContentRepository(MultiDbRepository):
 
 	def getContent(self, scode, boardId):
 		sql = f"SELECT * FROM boardContent WHERE boardId='{boardId}'"
-		return super().selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
     
 	def qInsert(self):
 		sql = 'INSERT INTO boardContent (boardId, userId, content) VALUES(%s, %s, %s)'

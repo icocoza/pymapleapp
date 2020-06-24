@@ -25,7 +25,7 @@ class BoardVoteUserRepository(MultiDbRepository):
 
 	def getVoteUser(self, scode, userId, boardId):
 		sql = f"SELECT * FROM voteUser WHERE userId='{userId}' AND boardId='{boardId}'"
-		return super().selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 
 	def getVoteUserList(self, scode, boardId):

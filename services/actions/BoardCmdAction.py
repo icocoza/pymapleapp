@@ -82,10 +82,10 @@ class BoardCmdAction(Action):
                                        jdata['hasImage'], jdata['hasFile'], jdata['category'], jdata['contentType'] if 'contentType' not in jdata else 'text') == False:
             return self.setError(scode, AllError.FailAddBoard)
         
-        queries = []        
-        queries.append(self.boardContentRepository.qInsert(scode, boardId, userId, jdata['content']))
-        queries.append(self.boardCountRepository.qInsert(scode, boardId))
+        self.boardContentRepository.insert(scode, boardId, userId, jdata['content'])
+        self.boardCountRepository.insert(scode, boardId)
 
+        queries = []        
         if scrapIds is not None and len(scrapIds) > 0:
             for scrapId in scrapIds:
                 queries.append(self.boardScrapRepository.qInsertScrap(scode, boardId, scrapId))
@@ -193,14 +193,15 @@ class BoardCmdAction(Action):
         boardList = self.boardDetailRepository.getBoardList(scode, jdata['category'], jdata['offset'], jdata['count'])
         if len(boardList) < 1:
             return self.setError(scode, AllError.NoListData)
-        voteBoardIds = filter(lambda item: item['contentType'] == EBoardContentType.vote.name(), boardList)
-        voteCount = self.boardVoteUserCountRepository.getVoteCount(scode, voteBoardIds)
-        if len(voteCount) > 0:
-            votedIt = self.boardVoteUserCountRepository.getVotedBoardId(scode, userId, voteBoardIds)
-            for board in boardList:
-                if board['contentType'] == EBoardContentType.vote.name() and board['boardId'] in voteCount:
-                    board['voteCount'] = voteCount['voteCount']
-                board['voted'] = True if board['boardId'] in votedIt else False
+        voteBoardIds = list(filter(lambda item: item['contentType'] == EBoardContentType.vote.name, boardList))
+        if len(voteBoardIds) > 0:
+            voteCount = self.boardVoteUserCountRepository.getVoteCount(scode, voteBoardIds)
+            if len(voteCount) > 0:
+                votedIt = self.boardVoteUserCountRepository.getVotedBoardId(scode, userId, voteBoardIds)
+                for board in boardList:
+                    if board['contentType'] == EBoardContentType.vote.name and board['boardId'] in voteCount:
+                        board['voteCount'] = voteCount['voteCount']
+                    board['voted'] = True if board['boardId'] in votedIt else False
 
         return self.setOk(scode, boardList)
         
@@ -215,14 +216,15 @@ class BoardCmdAction(Action):
         likeRec = self.boardLikeRepository.getPreference(scode, boardId, content['userId'])
         files = self.fileRepository.getFileList(scode, boardId)
         voteItems = self.boardVoteItemRepository.getVoteItemList(scode, boardId)
+        count = self.boardCountRepository.getCountInfo(scode, boardId)
 
-        return self.setOk(scode, {'scrapList': scrapList, 'like': likeRec, 'files': files, 'voteItems': voteItems, 'content': content})
+        return self.setOk(scode, {'scrapList': scrapList, 'like': likeRec, 'files': files, 'voteItems': voteItems, 'count': count, 'content': content})
 
     def incBoardLike(self, scode, session, jdata):
         userId = session['userId']
         boardId = jdata['boardId']
         if jdata['added'] == True and self.boardLikeRepository.insert(scode, boardId, userId, session['userName'], jdata['preference']) == False:
-            return self.setError(scode, AllError.AlreadyLiked)
+            return self.setError(scode, AllError.AlreadyLikedOrDisliked)
         elif jdata['added'] == False and self.boardLikeRepository.deletePreference(scode, boardId, userId, jdata['preference']) == False:
             return self.setError(scode, AllError.NotExistLikedUser)
         self.boardCountRepository.incLike(scode, boardId, jdata['added'])
@@ -233,7 +235,7 @@ class BoardCmdAction(Action):
         userId = session['userId']
         boardId = jdata['boardId']
         if jdata['added'] == True and self.boardLikeRepository.insert(scode, boardId, userId, session['userName'], jdata['preference']) == False:
-            return self.setError(scode, AllError.AlreadyDisliked)
+            return self.setError(scode, AllError.AlreadyLikedOrDisliked)
         elif jdata['added'] == False and self.boardLikeRepository.deletePreference(scode, boardId, userId, jdata['preference']) == False:
             return self.setError(scode, AllError.NotExistDislikeUser)
         self.boardCountRepository.incDislike(scode, boardId, jdata['added'])
@@ -245,6 +247,9 @@ class BoardCmdAction(Action):
         boardId = jdata['boardId']
         replyId = StrUtils.getMapleUuid('replyId:')
 
+        if ('parentReplyId' not in jdata or len(jdata['parentReplyId']) < 1) and ('depth' not in jdata or int(jdata['depth']) > 0):
+            return self.setError(scode, AllError.ErrorReplyHierarchy)
+
         self.boardReplyRepository.insert(scode, replyId, boardId, jdata['parentReplyId'], userId, session['userName'], jdata['depth'], jdata['body'])
         replyList = self.boardReplyRepository.getList(scode, boardId, 0, 15)
 
@@ -252,7 +257,7 @@ class BoardCmdAction(Action):
 
     def delReply(self, scode, session, jdata):
         userId = session['userId']
-        replyId = jdata['replyid']
+        replyId = jdata['replyId']
 
         if self.boardReplyRepository.delete(scode, replyId, userId) == False:
             return self.setError(scode, AllError.FailDeleteReply)
@@ -272,7 +277,7 @@ class BoardCmdAction(Action):
         if res['result'] != 'ok':
             return res
         userId = session['userId']
-        boardId = jdata['boardId']
+        boardId = res['data']['boardId']
 
         if self.boardVoteRepository.insert(scode, boardId, userId, session['userName'], jdata['expiredAt']) == False:
             self.boardRepository.deleteBoard(scode, boardId, userId)
@@ -304,6 +309,11 @@ class BoardCmdAction(Action):
         elif selected == False and self.boardVoteUserRepository.delete(scode, userId, boardId) == False:
             return self.setError(scode, AllError.FailDelVoteUser)
 
+        if selected :
+            self.boardVoteItemRepository.incVoteItem(scode, boardId, voteItemId)
+        else:
+            self.boardVoteItemRepository.decVoteItem(scode, boardId, voteItemId)
+
         voteItemList = self.boardVoteItemRepository.getVoteItemList(scode, boardId)
         return self.setOk(scode, {'boardId': boardId, 'voteItems': voteItemList})
 
@@ -333,8 +343,17 @@ class BoardCmdAction(Action):
         userId = session['userId']
         boardId = jdata['boardId']
 
+        voteUser = self.boardVoteUserRepository.getVoteUser(scode, userId, boardId)
+        if voteUser is None:
+            return self.setError(scode, AllError.NotExistVoteUser)
+
+        if voteUser['voteItemId'] == jdata['voteItemId']:
+            return self.setError(scode, AllError.SelectSameVoteItem)
+
         if self.boardVoteUserRepository.updateSelectItem(scode, userId, boardId, jdata['voteItemId']) == False:
             return self.setError(scode, AllError.NotExistVoteInfo)
+        self.boardVoteItemRepository.incVoteItem(scode, boardId, jdata['voteItemId'])
+        self.boardVoteItemRepository.decVoteItem(scode, boardId, voteUser['voteItemId'])
         return self.setOk(scode, {'boardId': boardId, 'voteItemId': jdata['voteItemId']})
 
     def getVoteInfoList(self, scode, session, jdata):

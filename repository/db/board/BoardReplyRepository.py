@@ -13,7 +13,7 @@ class BoardReplyRepository(MultiDbRepository):
 		return super().insertQuery(scode, sql)	
 
 	def delete(self, scode, replyId, userId):
-		sql = f"DELETE FROM boardReply WHERE replyId='{replyId}' AND userId='{userId}"
+		sql = f"DELETE FROM boardReply WHERE replyId='{replyId}' AND userId='{userId}'"
 		return super().deleteQuery(scode, sql)	
 
 	def deleteIfNoChild(self, scode, replyId, boardId, userId):
@@ -28,6 +28,6 @@ class BoardReplyRepository(MultiDbRepository):
 		return super().updateQuery(scode, sql)	
 
 	def getList(self, scode, boardId, offset, count):
-		sql = f"SELECT * FROM boardReply WHERE boardId='{boardId}' LIMIT {offset}, {count}"
+		sql = f"SELECT replyId, parentId, userId, userName, depth, body, replyAt FROM boardReply WHERE boardId='{boardId}' LIMIT {offset}, {count}"
 		return super().selectQuery(scode, sql)
 	

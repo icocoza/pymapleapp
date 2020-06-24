@@ -16,7 +16,7 @@ class BoardCountRepository(MultiDbRepository):
 	
 
 	def incDislike(self, scode, boardId, bInc):
-		sql = f"UPDATE boardCount SET dislikes=dislikes+{1 if bInc else -1} WHERE  boardId='{boardId}'"
+		sql = f"UPDATE boardCount SET dislikes=dislikes+{1 if bInc else -1} WHERE  boardId='{boardId}' and dislikes > {-1 if bInc else 0}"
 		return super().updateQuery(scode, sql)
 	
 
@@ -30,8 +30,8 @@ class BoardCountRepository(MultiDbRepository):
 		return super().updateQuery(scode, sql)
 
 	def getCountInfo(self, scode, boardId):
-		sql = f"SELECT * FROM boardCount WHERE  boardId='{boardId}'"
-		return super().selectQuery(scode, sql)
+		sql = f"SELECT likes, dislikes, visit FROM boardCount WHERE  boardId='{boardId}'"
+		return super().selectOne(scode, sql)
 
 	def qInsert(self, scode, boardId):
 		return f"INSERT INTO boardCount(boardId) VALUES('{boardId}')"

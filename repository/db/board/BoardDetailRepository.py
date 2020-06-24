@@ -8,26 +8,26 @@ from repository.db.MultiDbRepository import MultiDbRepository
 class BoardDetailRepository(MultiDbRepository):
 
 	def getBoardList(self, scode, category, offset,  count):
-		sql = f"SELECT * FROM board \
-				LEFT JOIN boardcount ON board.boardid=boardcount.boardid \
-				LEFT JOIN filecrop ON board.boardid=filecrop.boardid \
-				LEFT JOIN boardscrap ON board.boardid=boardscrap.boardid \
-				LEFT JOIN scrap ON scrap.scrapid=boardscrap.scrapid \
-				WHERE board.category='{category}' AND board.deleted=false ORDER BY board.createtime DESC LIMIT {offset}, {count}"
+		sql = f"SELECT board.boardId, board.userId, board.userName, board.title, board.shortContent, board.hasImage, board.hasFile, board.category, \
+	   			board.contentType, board.createdAt, boardCount.likes, boardCount.dislikes, boardCount.visit, boardCount.reply FROM board \
+				LEFT JOIN boardCount ON board.boardId=boardCount.boardId \
+				LEFT JOIN boardScrap ON board.boardId=boardScrap.boardId \
+				LEFT JOIN scrap ON scrap.scrapId=boardScrap.scrapId \
+				WHERE board.category='{category}' AND board.deletedAt is NULL ORDER BY board.createdAt DESC LIMIT {offset}, {count}"
 		return super().selectQuery(scode, sql)
 	
 	def getBoardListByIds(self, scode, boardIds):
 		ids = ','.join(["'" + str(id)+"'" for id in boardIds])
-		sql = f"SELECT * FROM board \
-				LEFT JOIN boardcount ON board.boardid=boardcount.boardid \
-				LEFT JOIN filecrop ON board.boardid=filecrop.boardid \
-				LEFT JOIN boardscrap ON board.boardid=boardscrap.boardid \
-				LEFT JOIN scrap ON scrap.scrapid=boardscrap.scrapid \
-				WHERE board.boardid IN ({ids}) ORDER BY FIELD(board.boardid, {ids})"
+		sql = f"SELECT board.boardId, board.userId, board.userName, board.title, board.shortContent, board.hasImage, board.hasFile, board.category, \
+	   			board.contentType, board.createdAt, boardCount.likes, boardCount.dislikes, boardCount.visit, boardCount.reply FROM board FROM board \
+				LEFT JOIN boardCount ON board.boardId=boardCount.boardId \
+				LEFT JOIN boardScrap ON board.boardId=boardScrap.boardId \
+				LEFT JOIN scrap ON scrap.scrapId=boardScrap.scrapId \
+				WHERE board.boardId IN ({ids}) ORDER BY FIELD(board.boardId, {ids})"
 		return super().selectQuery(scode, sql)
 	
 	def getCropfilePath(self, scode, rec):
 		if(rec.fileName==None or len(rec.fileName) < 1):
 			return None
-		return f"http://{rec.serverIp}:8080/{rec.subPath}?boardid={rec.boardId}&scode={scode}"
+		return f"http://{rec.serverIp}:8080/{rec.subPath}?boardId={rec.boardId}&scode={scode}"
 

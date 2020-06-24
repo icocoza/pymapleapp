@@ -77,7 +77,7 @@ class MultiDbManager:
         return self.dbManagerMap[scode].nonSelect(query)
 
     
-    def execute(self, query, params):
+    def execute(self, scode, query, params):
         if scode not in self.dbManagerMap:
             return False
         return self.dbManagerMap[scode].execute(query, params)

@@ -15,11 +15,11 @@ class BoardLikeRepository(MultiDbRepository):
 
 	def delete(self, scode, boardId):
 		sql = f"DELETE FROM boardVoter WHERE boardId='{boardId}'"
-		return super.delete(super().deleteQuery(scode, sql))
+		return super().delete(scode, sql)
 
 	def deletePreference(self, scode, boardId, userId, preferences ):
 		sql = f"DELETE FROM boardVoter WHERE boardId='{boardId}' AND userId='{userId}' AND preferences='{preferences}'"
-		return super.delete(super().deleteQuery(scode, sql))
+		return super().delete(scode, sql)
 
 	def getPreference(self, scode, boardId, userId):
 		sql = f"SELECT userName, preferences FROM boardVoter WHERE boardId='{boardId}' AND userId='{userId}'"

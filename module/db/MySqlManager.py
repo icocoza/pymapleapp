@@ -86,7 +86,7 @@ class MySqlManager:
             #return [ dict(line) for line in [zip([ column[0] for column in cursor.description], row) for row in cursor.fetchall()] ]            
         except Exception as ex:
             exutil.printException()
-            self.cbAndEvt.onDbError.fire(str(ex))
+            #self.cbAndEvt.onDbError.fire(str(ex))
             #if(self.cbAndEvt != None):
             #    self.cbAndEvt.on_disconnected("disconnected")
             return None
@@ -104,7 +104,6 @@ class MySqlManager:
             return True
         except Exception as ex:
             exutil.printException()
-            self.cbAndEvt.onDbError.fire(str(ex))
             return False
         finally:
             if conn.is_connected() == True :
@@ -122,7 +121,6 @@ class MySqlManager:
             return True
         except Exception as ex:
             exutil.printException()
-            self.cbAndEvt.onDbError.fire(str(ex))
             return False
         finally:
             if conn.is_connected() == True :
@@ -147,7 +145,6 @@ class MySqlManager:
             return True
         except Exception as ex:
             exutil.printException()
-            self.cbAndEvt.onDbError.fire(str(ex))
             return False
         finally:
             if conn.is_connected() == True :

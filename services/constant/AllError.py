@@ -149,6 +149,7 @@ class AllError(Enum):
 	NotExistVoteInfo = auto()
 	AlreadyLiked = auto()
 	AlreadyDisliked = auto()
+	AlreadyLikedOrDisliked = auto()
 	AlreadyVoteUser = auto()
 	AlreadyExpired = auto()
 	NoData = auto()
@@ -158,6 +159,7 @@ class AllError(Enum):
 	PermissionDeny = auto()
 	WrongAptCode = auto()
 	VoteItemHas2More = auto()
+	SelectSameVoteItem = auto()
 	
 	NoChannel = auto()
 	FailToUpdate = auto()
@@ -190,4 +192,6 @@ class AllError(Enum):
 	UnauthorizedUser = auto()
 	UnauthorizedOrExpiredUser = auto()
 	FailToMakePooling = auto()
+
+	ErrorReplyHierarchy = auto()
 	unknown_error = auto()

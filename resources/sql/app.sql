@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS  `scrapBody` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `uploadFile` (
-  `fildId` varchar(64) NOT NULL,
+  `fileId` varchar(64) NOT NULL,
   `userId` varchar(64) NOT NULL,
   `boardId` varchar(64) NOT NULL,
   `fileName` varchar(128) NOT NULL,

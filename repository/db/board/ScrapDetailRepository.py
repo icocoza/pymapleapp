@@ -16,7 +16,7 @@ class ScrapDetailRepository(MultiDbRepository):
 	
 	def getScrapDetailList(self, scode, boardId):
 		sql = f"SELECT * FROM scrap \
-			    LEFT JOIN scrapbody ON scrap.scrapid = scrapbody.scrapid \
-				LEFT JOIN boardscrap ON scrap.scrapid = boardscrap.scrapid \
-				WHERE boardscrap.boardid='{boardId}'"
+			    LEFT JOIN scrapBody ON scrap.scrapId = scrapBody.scrapId \
+				LEFT JOIN boardScrap ON scrap.scrapId = boardScrap.scrapId \
+				WHERE boardScrap.boardId='{boardId}'"
 		return super().selectQuery(scode, sql)

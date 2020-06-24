@@ -10,8 +10,7 @@ class BoardVoteRepository(MultiDbRepository):
 
 
 	def insert(self, scode, boardId,  userId,  userName,  expiredAt):
-		expiredAtStr = datetime.strftime(expiredAt, "yyyy-MM-dd HH:mm:ss")
-		sql = f"INSERT INTO vote (boardId, userId, userName, expiredAt) VALUES('{boardId}', '{userId}', '{userName}', '{expiredAtStr}')"
+		sql = f"INSERT INTO vote (boardId, userId, userName, expiredAt) VALUES('{boardId}', '{userId}', '{userName}', '{expiredAt}')"
 		return super().insertQuery(scode, sql)
 	
 
