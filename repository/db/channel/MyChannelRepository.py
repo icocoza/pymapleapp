@@ -35,7 +35,7 @@ class MyChannelRepository(MultiDbRepository):
 
 
 	def getChannelCount(self, scode, userId):
-		return super().count(f"SELECT COUNT(*) FROM chatMyChannel WHERE userId='{userId}'")
+		return super().count(scode, f"SELECT COUNT(*) FROM chatMyChannel WHERE userId='{userId}'")
 
 	def getChannelInfoList(self, scode, userId, offset, count):
 		return MyChannelExtRepository().getChannelInfoList(userId, offset, count)

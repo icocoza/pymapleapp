@@ -309,3 +309,103 @@ Admin
         "voteItemId": "voteItemId:234uiojkd"
     }
 }
+================================ Channel =====================================
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "channelCreate",
+        "channelName": "channelName I",
+        "attendees": ["userA" "userB"],
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "channelExit",
+        "channelId": "channelId:2iedndiu8hkjh2jk2"
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "channelEnter",
+        "channelId": "channelId:2iedndiu8hkjh2jk2"
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "channelInvite",
+        "channelId": "channelId:2iedndiu8hkjh2jk2",
+        "invitees": ["userA" "userB"]
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "myChannel",
+        "offset": 0,
+        "count" : 5
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "myChannelCount"
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "channelLastMessage",
+        "channelIds": ["ch01", "channel02"]
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "channelInfos",
+        "offset": 0,
+        "count" : 5
+    }
+}

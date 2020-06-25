@@ -8,11 +8,11 @@ from repository.db.MultiDbRepository import MultiDbRepository
 
 class ChannelRepository(MultiDbRepository):
 
-	def insert(self, scode, channelId, userId, attendees, attendeeCount, channelType):
-		sql = f"INSERT INTO chatChannel (channelId, userId, attendees, attendeeCount, channelType) \
-                VALUES('{channelId}', '{userId}', '{attendees}', {attendeeCount}, '{channelType}')"
-		return super().insertQuery(scode, sql)
-
+	def insert(self, scode, channelId, userId, channelName, attendees, attendeeCount, channelType):
+		params = (channelId, userId, channelName, attendees, attendeeCount, channelType)
+		sql = f"INSERT INTO chatChannel (channelId, userId, channelName, attendees, attendeeCount, channelType) \
+                VALUES(%s, %s, %s, %s, %s, %s)"
+		return super().execute(scode, sql, params)
 
 	def delete(self, scode, channelId):
 		sql = f"DELETE FROM chatChannel WHERE channelId='{channelId}'"
@@ -37,7 +37,7 @@ class ChannelRepository(MultiDbRepository):
 
 	def getChannel(self, scode, channelId):
 		sql = f"SELECT * FROM chatChannel WHERE channelId='{channelId}'"
-		return super().selectQuery(scode, sql)
+		return super().selectOne(scode, sql)
 
 
 	def findChannel(self, scode, userId, attendees):

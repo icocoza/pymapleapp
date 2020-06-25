@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS  `boardVoter` (
 CREATE TABLE IF NOT EXISTS  `chatChannel` (
   `channelId` varchar(64) NOT NULL,
   `userId` varchar(64) NOT NULL,
+  `channelName` varchar(128) DEFAULT 'NoName',
   `attendees` varchar(1024) NOT NULL,
   `attendeeCount` smallint(6) NOT NULL,
   `lastMessage` varchar(128) DEFAULT '',

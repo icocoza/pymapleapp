@@ -40,12 +40,12 @@ class ChannelCmdAction(Action):
             channelRec = self.channelRepository.findChannel(scode, userId, jdata['attendees'][0])
             if channelRec != None:
                 self.myChannelRepository.insert(scode, userId, channelRec['channelId'])
-                return self.Ok(scode, channelRec['channelId'])
+                return self.setOk(scode, channelRec['channelId'])
         channelId = StrUtils.getMapleUuid('channelId:')
         attendees = '|'.join([ attendee for attendee in jdata['attendees']])
-        self.channelRepository.insert(scode, channelId, userId, attendees, EChannelType.oneToOne if attendeeCount == 2 else EChannelType.group)
-        self.myChannelRepository.insert(scode, userId, channelRec['channelId'])
-        return self.Ok(scode, channelRec['channelId'])
+        self.channelRepository.insert(scode, channelId, userId, jdata['channelName'], attendees, len(attendees), EChannelType.oneToOne.name if attendeeCount == 2 else EChannelType.group.name)
+        self.myChannelRepository.insert(scode, userId, channelId)
+        return self.setOk(scode, {'channelId': channelId})
 
     def channelExit(self, scode, session, jdata):
         userId = session['userId']
@@ -54,16 +54,18 @@ class ChannelCmdAction(Action):
         channelRec = self.channelRepository.getChannel(scode, channelId)
         if channelRec == None:
             return self.setError(scode, AllError.NoChannel)
-        
+        attendees = channelRec['attendees']
         self.myChannelRepository.delete(scode, userId, channelId)
-        if channelRec['channelType'] == EChannelType.group.name():
-            attendees = channelRec['attendees']
+
+        if channelRec['channelType'] == EChannelType.group.name:            
             if userId in attendees:
-                attendees = attendees.replace(userId+'|', '').replace(userId, '')
+                attendees = attendees.split('|', -1)
+                attendees = list(filter(lambda x : x != userId, attendees))
+                attendees = '|'.join(attendees)
             if len(attendees) < 1:
                 self.channelRepository.delete(scode, channelId)
             else:
-                self.channelRepository.updateChatChannelAttendee(scode, channelId, attendees, channelRec['attendeeCount']-1)
+                self.channelRepository.updateAttendee(scode, channelId, attendees, channelRec['attendeeCount']-1, EChannelType.group.name)
         return self.setOk(scode, {'channelId': channelId, 'attendees': attendees.split('|', -1)})
 
     def channelEnter(self, scode, session, jdata):
@@ -94,7 +96,7 @@ class ChannelCmdAction(Action):
             attendees.append(userId)
             
         attendeeStr = '|'.join([attendee for attendee in attendees])
-        if self.channelRepository.updateAttendee(scode, channelId, attendeeStr, len(attendees), EChannelType.group.name()) == False:
+        if self.channelRepository.updateAttendee(scode, channelId, attendeeStr, len(attendees), EChannelType.group.name) == False:
              return self.setError(scode, AllError.FailToUpdate)
         return self.setOk(scode, {'channelId': channelId, 'attendees': attendees})
 
@@ -113,9 +115,9 @@ class ChannelCmdAction(Action):
     def channelLastMessage(self, scode, session, jdata):
         userId = session['userId']
         channelList = self.channelLastMsgRepository.getChannelLastMsg(scode, jdata['channelIds'])
-        return self.setOk(scode, channelList)
+        return self.setOk(scode, {'channelList': channelList})
 
     def channelInfos(self, scode, session, jdata):
         userId = session['userId']
         channelList = self.myChannelExtRepository.getChannelInfoList(scode, userId, jdata['offset'], jdata['count'])
-        return self.setOk(scode, channelList)
+        return self.setOk(scode, {'channelList': channelList})
