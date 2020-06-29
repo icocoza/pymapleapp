@@ -8,12 +8,10 @@ from repository.db.MultiDbRepository import MultiDbRepository
 
 class MsgRepository(MultiDbRepository):
 
-
 	def insert(self, scode, messageId, channelId, senderId, messageType, content):
-		sql = f"INSERT INTO chatMessage (messageId, channelId, senderId, messageType, content) \
-                VALUES('{messageId}', '{channelId}', '{senderId}', '{messageType}'', '{content}')"
-		return super.insert(scode, sql)
-
+		params = (messageId, channelId, senderId, messageType, content)
+		sql = f"INSERT INTO chatMessage (messageId, channelId, senderId, messageType, content) VALUES(%s, %s, %s, %s, %s)"
+		return super.insert(scode, sql, params)
 
 	def delete(self, scode, messageId):
 		sql = f"DELETE FROM chatMessage WHERE messageId='{messageId}'"

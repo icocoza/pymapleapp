@@ -38,6 +38,17 @@ class UserRepository(MultiDbRepository):
 		sql = f"SELECT * FROM user WHERE userName='{userName}'"
 		return super().selectOne(scode, sql) != None
 
+	def getUserList(self, scode, userIds):
+		userIds = ','.join(["'" + str(id)+"'" for id in userIds])
+		sql = f"SELECT userId, userName FROM user WHERE userId in ({userIds})"
+		userList = super().select(scode, sql)
+		if userList is None or len(userList) < 1:
+			return None
+		userMap = {}
+		for user in userList:
+			userMap[user['userId']] = user['userName']
+		return userMap
+	
 	def updateAppCode(self, scode, userId, inAppcode):
 		sql = f"UPDATE user SET inAppcode='{inAppcode}' WHERE userId='{userId}'"
 		return super().update(scode, sql)

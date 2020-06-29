@@ -6,6 +6,7 @@ from services.actions.Action import Action
 
 from repository.db.friend.FriendRepository import FriendRepository
 from repository.db.friend.FriendInfoRepository import FriendInfoRepository
+from repository.db.user.UserRepository import UserRepository
 import common.config.appconfig as appconfig
 
 from services.constant.MapleEnum import EFriendType
@@ -17,9 +18,10 @@ class FriendCmdAction(Action):
 
         self.friendRepository = FriendRepository()
         self.friendInfoRepository = FriendInfoRepository()
+        self.userRepository = UserRepository()
 
         self.funcMap = {}
-        self.funcMap[EFriendCmd.addFriend.name] = lambda scode, session, jdata: self.addMessage(scode, session, jdata)
+        self.funcMap[EFriendCmd.addFriend.name] = lambda scode, session, jdata: self.addFriend(scode, session, jdata)
         self.funcMap[EFriendCmd.delFriend.name] = lambda scode, session, jdata: self.delFriend(scode, session, jdata)
         self.funcMap[EFriendCmd.changeFriendType.name] = lambda scode, session, jdata: self.changeFriendType(scode, session, jdata)
         self.funcMap[EFriendCmd.getFriendList.name] = lambda scode, session, jdata: self.getFriendList(scode, session, jdata)
@@ -32,12 +34,16 @@ class FriendCmdAction(Action):
 
     def addFriend(self, scode, session, jdata):
         userId = session['userId']
-        friendList = jdata['friendList']
+        friendIds = jdata['friendIds']
 
         addedFriend = []
-        for friend in friendList:
-            if self.friendRepository.insert(scode, userId, friend['friendId'], friend['friendName'], jdata['friendType']) == True:
-                addedFriend.append({'friendId': friend['friendId'], 'friendName': friend['friendName']})
+        friendList = self.userRepository.getUserList(scode, friendIds)
+        if len(friendList) < 1:
+            return self.setError(scode, AllError.NoFriendInfo)
+        for friendId in friendIds:
+            if friendId in friendList:
+                if self.friendRepository.insert(scode, userId, friendId, friendList[friendId], EFriendType.friend.name) == True:
+                    addedFriend.append({'friendId': friendId, 'friendName': friendList[friendId]})
         return self.setOk(scode, {'added': addedFriend})
 
     def delFriend(self, scode, session, jdata):
@@ -54,10 +60,10 @@ class FriendCmdAction(Action):
         userId = session['userId']
         updatedFriend = []
 
-        for friend in jdata['friendList']:
-            if self.friendRepository.updateFriendType(scode, userId, friend['friendId'], friend['friendType']) == True:
-                updatedFriend.append(friend['friendId'])
-        return self.setOk(scode, {'updated': updatedFriend})
+        for friendId in jdata['friendIds']:
+            if self.friendRepository.updateFriendType(scode, userId, friendId, jdata['friendType']) == True:
+                updatedFriend.append(friendId)
+        return self.setOk(scode, {'updated': updatedFriend, 'friendType': jdata['friendType']})
 
     def getFriendList(self, scode, session, jdata):
         userId = session['userId']
@@ -92,5 +98,5 @@ class FriendCmdAction(Action):
 
     def blockMeCount(self, scode, session, jdata):
         userId = session['userId']
-        count = self.friendRepository.getFriendMeCount(scode, userId, EFriendType.block.name())
+        count = self.friendRepository.getFriendMeCount(scode, userId, EFriendType.block.name)
         return self.setOk(scode, {'count': count})

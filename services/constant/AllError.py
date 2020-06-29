@@ -194,4 +194,7 @@ class AllError(Enum):
 	FailToMakePooling = auto()
 
 	ErrorReplyHierarchy = auto()
+
+	NoFriendInfo = auto()
+	
 	unknown_error = auto()

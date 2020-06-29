@@ -409,3 +409,118 @@ Admin
         "count" : 5
     }
 }
+
+========================= Friend =========================
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "addFriend",
+        "friendIds": ["friendId:sdkfjalsdkf"]
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "delFriend",
+        "friendIds": ["friendId": "friendId:asdjfklkasdf"]
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "changeFriendType",
+        "friendType": "block"
+        "friendIds": ["friendId": "userId:1645d57ee716556fb5df8e1c46c838932b5ade321592230331814"]
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "getFriendList",
+        "friendType": "all",
+        "offset": 0,
+        "count" : 5
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "friendCount",
+        "friendType": "all",
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "friendsInfo",
+        "friendIds": ["friendId:sdkfjalsdkf"],
+    }
+}
+
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "friendMeUser",
+        "friendType": "friend",
+        "offset": 0,
+        "count" : 5         
+    }
+}
+
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "appendMeCount",
+        "friendType": "friend"
+    }
+}
+
+{
+    "version": "v1.0",
+    "stype": "maple",    
+    "scode": "serviceA",
+
+    "data": {
+        "signinToken": "AjpQWvKhXVQ7wilvmngfOR2SZjuuo6p77D24NPVc9HwIQXaIV0cTyOFh1WRoV8ZdqEtv0nS1eNNyIlOptENQZhVYgZi4zUa02Y6ke72m212BvunVM4qm8TaLGkZgSRW4Nw3HvIObwXkN2il0dx5exZVosYcViOlw6gfInGYO2K6b7RTkGDG6buyK7qEVi9LouC6xmKEDWrMEnoCKvN7UC1j2s9AgKzIqZQwsl9tDDv0kKpKc2QTp13CDQAEOptkbk72fyHEQa4598FB8MtKtUzIGSPTCuGqcD8JbU2UGyGSIbBOE5Sz4VSkHcBjRia0YF2HJ4AEyopQLKWrKC3mUucwf",
+        "cmd": "blockMeCount"
+    }
+}
